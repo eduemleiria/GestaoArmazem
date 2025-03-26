@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { AppWindowIcon, BookOpen, BriefcaseBusiness, Folder, Handshake, HandshakeIcon, LayoutGrid, User2, User2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -14,9 +14,14 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Gestão de Users',
+        href: 'gestao-users',
+        icon: User2Icon,
+    },
+    {
         title: 'Home Page',
         href: '/',
-        icon: LayoutGrid,
+        icon: AppWindowIcon,
     },
 ];
 
