@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use Inertia\Inertia;
 
+// Rotas da página inicial (Frontend)
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
@@ -24,16 +26,16 @@ Route::get('sobre-nos', function(){
 })->name('sobre-nos');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    //Rota da dashboard
+    Route::get('dashboard', function () { return Inertia::render('dashboard'); })->name('dashboard');
+
+    // Rotas da Gestão de Users
+    Route::get('gestao-users/listar', [UserController::class, 'index'])->name('gestao-users');
+    Route::get('gestao-users/adicionar', function () { return Inertia::render('gestaoUsers/adicionar-user'); })->name('adicionar');
+    Route::post('adicionar-user', [UserController::class, 'store'])->name('adicionar-user.store');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('gestao-users', function () {
-        return Inertia::render('gestaoUsers/gestaoUsers');
-    })->name('gestao-users');
-});
+
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

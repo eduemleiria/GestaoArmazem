@@ -15,7 +15,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Gestão de Users',
-        href: 'gestao-users',
+        href: '/gestao-users/listar',
         icon: User2Icon,
     },
     {

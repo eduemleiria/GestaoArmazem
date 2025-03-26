@@ -12,7 +12,10 @@ export default function Welcome() {
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
             <NavBar />
-            <h1>Isto é a home page</h1>
+            <div className="w-screen h-screen flex justify-left items-center">
+                <h1 className="font-bold text-8xl text-lime-300">Armazenagem</h1>
+                <h1 className="font-bold text-8xl text-gray-300">é connosco.</h1>
+            </div>
         </>
     );
 }

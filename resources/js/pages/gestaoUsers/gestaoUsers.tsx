@@ -1,46 +1,36 @@
-import { useEffect, useState } from "react";
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { Payment, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { Head, Link, usePage } from '@inertiajs/react';
+import { Cliente, columns } from './columns';
+import { DataTable } from './data-table';
 
-async function getData(): Promise<Payment[]> {
-    return [
-      {
-        id: "728ed52f",
-        amount: 100,
-        status: "pending",
-        email: "m@example.com"
-      },
-    ];
+interface PageProps {
+    users: Cliente[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Gestão dos Users',
-        href: '/gestao-users',
+        title: 'Gestão dos Users | Listagem',
+        href: 'gestao-users/listar',
     },
 ];
 
-export default function GestaoClientes() {
-    const [data, setData] = useState<Payment[]>([]);
-
-    useEffect(() => {
-        async function fetchData() {
-            const result = await getData();
-            setData(result);
-        }
-        fetchData();
-    }, []);
+export default function GestaoUsers() {
+    const { users } = usePage().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Gestão de Users" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <Head title="Gestão de Users | Lista" />
+            <div className="p-2">
+                <Button asChild className="bg-green-400 hover:bg-green-500 hover:text-black">
+                    <Link href="/gestao-users/adicionar">Adicionar user</Link>
+                </Button>
+            </div>
+
+            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-1">
                 <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
-                    <DataTable columns={columns} data={data} />
+                    <DataTable columns={columns} data={users} />
                 </div>
             </div>
         </AppLayout>
