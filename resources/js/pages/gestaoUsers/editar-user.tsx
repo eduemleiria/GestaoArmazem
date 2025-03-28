@@ -10,29 +10,27 @@ import { z } from 'zod';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Gestão dos Users | Adicionar',
-        href: '/adicionar-user',
+        title: 'Gestão dos Users | Editar',
+        href: '/editar-user',
     },
 ];
 
 const formSchema = z.object({
     nome: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres').max(50),
     email: z.string().email('Email inválido'),
-    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres').max(32),
 });
 
-export default function AdicionarUser() {
+export default function EditarUser({ user }: any) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            nome: '',
-            email: '',
-            password: '',
+            nome: user?.name || '',
+            email: user?.email || ''
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        router.post('/adicionar-user', values, {
+        router.patch(route('editar-user.update', user.id), values, {
             onSuccess: () => {
             },
             onError: (errors) => {
@@ -71,20 +69,7 @@ export default function AdicionarUser() {
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input type="password" placeholder="Insira aqui a password" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit">Adicionar</Button>
+                    <Button type="submit">Guardar</Button>
                 </form>
             </Form>
         </AppLayout>

@@ -1,83 +1,78 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import React from 'react';
+import { LogOut } from 'lucide-react';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 
-export default function NavBar() {
+interface UserMenuContentProps {
+    user: User;
+}
+
+export default function NavBar({user}: UserMenuContentProps) {
     const { auth } = usePage<SharedData>().props;
+    const cleanup = useMobileNavigation();
+
     return (
         <>
             <Head>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=Alexandria:400,500,600" rel="stylesheet" />
             </Head>
-            <nav className="flex items-center justify-between p-3">
-                <Link
-                    href={route('home')}
-                    className="text-xl font-bold text-black"
-                >
+            <div className={`sticky top-0 z-50 flex items-center justify-between rounded-b-lg bg-white p-4`}>
+                <Link href={route('home')} className={`text-xl font-bold text-black`}>
                     QuickShelf
-                </Link>    
-                <div className="flex justify-start ml-10">
-                    <Link
-                        href={route('servicos')}
-                        className="hover:underline"
-                    >
+                </Link>
+                <div className="ml-10 flex justify-start">
+                    <Link href={route('servicos')} className={`text-black hover:underline`}>
                         Serviços
-                    </Link>    
+                    </Link>
                 </div>
-                <div className="flex justify-start ml-5">
-                    <Link
-                        href={route('precos')}
-                        className="hover:underline"
-                    >
+                <div className="ml-5 flex justify-start">
+                    <Link href={route('precos')} className={`text-black hover:underline`}>
                         Preços
-                    </Link>    
+                    </Link>
                 </div>
-                <div className="flex justify-start ml-5">
-                    <Link
-                        href={route('contactos')}
-                        className="hover:underline"
-                    >
+                <div className="ml-5 flex justify-start">
+                    <Link href={route('contactos')} className={`text-black hover:underline`}>
                         Contactos
-                    </Link>    
+                    </Link>
                 </div>
-                <div className="flex justify-start ml-5">
-                    <Link
-                        href={route('sobre-nos')}
-                        className="hover:underline"
-                    >
+                <div className="ml-5 flex justify-start">
+                    <Link href={route('sobre-nos')} className={`text-black hover:underline`}>
                         Sobre Nós
-                    </Link>    
+                    </Link>
                 </div>
-                
-                <div className="flex space-x-4 ml-auto">
+
+                <div className="ml-auto flex space-x-4">
                     {auth.user ? (
-                    <>
-                        <Link
-                            href={route('dashboard')}
-                            className="inline-block rounded-sm border border-[#19140025] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                        >
-                            Dashboard
-                        </Link>
-                    </>
+                        <>
+                            <Link
+                                href={route('dashboard')}
+                                className="inline-block rounded-sm border border-[#19140025] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                            >
+                                Dashboard
+                            </Link>
+                            <Link className="text-sm hover:underline" method="post" href={route('logout')} as="button" onClick={cleanup}>
+                                Log out
+                            </Link>
+                        </>
                     ) : (
                         <>
                             <Link
                                 href={route('login')}
-                                className="inline-block rounded-sm border border-transparent bg-lime-100 px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] hover:bg-lime-200 dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                className="inline-block rounded-sm border border-transparent bg-lime-100 px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] hover:bg-lime-400 dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                             >
                                 Log in
                             </Link>
-                            <Link
+                            {/*<Link
                                 href={route('register')}
                                 className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                             >
                                 Register
-                            </Link>
+                            </Link>*/}
                         </>
                     )}
                 </div>
-            </nav>
+            </div>
         </>
     );
-};
+}

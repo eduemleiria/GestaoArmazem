@@ -33,6 +33,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('gestao-users/listar', [UserController::class, 'index'])->name('gestao-users');
     Route::get('gestao-users/adicionar', function () { return Inertia::render('gestaoUsers/adicionar-user'); })->name('adicionar');
     Route::post('adicionar-user', [UserController::class, 'store'])->name('adicionar-user.store');
+    Route::get('gestao-users/editar/{id}', [UserController::class, 'edit'])->name('editar.edit');
+    Route::patch('gestao-users/editar/{id}', [UserController::class, 'update'])->name('editar-user.update');
+    Route::delete('/remover-user/{id}', [UserController::class, 'destroy'])->name('remover-user.destroy');
+
+    // Rotas da Gestão de Clientes
 });
 
 

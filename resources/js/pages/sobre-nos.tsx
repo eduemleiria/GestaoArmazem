@@ -5,7 +5,7 @@ import NavBar from "@/components/nav-homepage";
 export default function SobreNos() {
     return(
         <>
-        <Head title="SobreNos">
+        <Head title="Sobre Nós">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=Alexandria:400,500,600" rel="stylesheet" />
         </Head>
