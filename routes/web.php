@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClienteController;
 use Inertia\Inertia;
 
 // Rotas da página inicial (Frontend)
@@ -38,6 +39,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/remover-user/{id}', [UserController::class, 'destroy'])->name('remover-user.destroy');
 
     // Rotas da Gestão de Clientes
+    Route::get('gestao-clientes/listar', [ClienteController::class, 'index'])->name('index');
+    Route::get('gestao-clientes/adicionar', function () { return Inertia::render('gestao-clientes/adicionar-cliente'); })->name('adicionar');
+    Route::post('adicionar-cliente', [ClienteController::class, 'store'])->name('adicionar-cliente.store');
+    Route::get('gestao-clientes/editar/{id}', [ClienteController::class, 'edit'])->name('editar.edit');
+    Route::patch('gestao-clientes/editar/{id}', [ClienteController::class, 'update'])->name('editar-cliente.update');
+    Route::delete('/remover-cliente/{id}', [ClienteController::class, 'destroy'])->name('remover-cliente.destroy');
+
 });
 
 

@@ -4,35 +4,34 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from '@inertiajs/react';
+import { router, Head } from '@inertiajs/react';
+import { User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Gestão dos Users | Adicionar',
-        href: '/adicionar-user',
+        title: 'Gestão de Clientes | Adicionar',
+        href: '/adicionar-cliente',
     },
 ];
 
 const formSchema = z.object({
-    nome: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres').max(50),
-    email: z.string().email('Email inválido'),
-    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres').max(32),
+    nome: z.string().min(1, 'O nome deve ter pelo menos 1 caracter').max(150),
+    morada: z.string().min(1, 'A morada é demasiado pequena').max(190),
 });
 
-export default function AdicionarUser() {
+export default function AdicionarCliente() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             nome: '',
-            email: '',
-            password: '',
+            morada: '',
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        router.post('/adicionar-user', values, {
+        router.post('/adicionar-cliente', values, {
             onSuccess: () => {
             },
             onError: (errors) => {
@@ -43,8 +42,9 @@ export default function AdicionarUser() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Gestão de Clientes | Adicionar" />
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-4 w-150">
                     <FormField
                         control={form.control}
                         name="nome"
@@ -60,25 +60,12 @@ export default function AdicionarUser() {
                     />
                     <FormField
                         control={form.control}
-                        name="email"
+                        name="morada"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>Morada</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="email@exemplo.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input type="password" placeholder="Insira aqui a password" {...field} />
+                                    <Input placeholder="Morada exemplo" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

@@ -1,44 +1,29 @@
+import DeleteUserDialog from '@/components/delete-user-dialog';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { EditIcon, MoreHorizontal } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import DeleteUserDialog from '@/components/delete-user-dialog';
+import DeleteClienteDialog from '@/components/delete-cliente-dialog';
 
-export type User = {
+export type Cliente = {
     id: string;
-    name: string;
-    email: string;
-    created_at: Date;
+    nome: string;
+    morada: string;
 };
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Cliente>[] = [
     {
         accessorKey: 'id',
         header: 'Id',
     },
     {
-        accessorKey: 'name',
+        accessorKey: 'nome',
         header: 'Nome',
     },
     {
-        accessorKey: 'email',
-        header: 'Email',
-    },
-    {
-        accessorKey: 'created_at',
-        header: () => 'Juntou-se dia',
-        cell: ({ row }) => {
-            const dia: any = row.getValue('created_at');
-
-            const formatted = new Intl.DateTimeFormat('en-GB', {
-                dateStyle: 'short',
-                timeStyle: 'short',
-                timeZone: 'Europe/Lisbon',
-            }).format(new Date(dia));
-
-            return <div className="font-medium">{formatted}</div>;
-        },
+        accessorKey: 'morada',
+        header: 'Morada',
     },
     {
         id: 'actions',
@@ -60,7 +45,7 @@ export const columns: ColumnDef<User>[] = [
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <DeleteUserDialog userId={row.original.id} />
+                            <DeleteClienteDialog clienteId={row.original.id} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

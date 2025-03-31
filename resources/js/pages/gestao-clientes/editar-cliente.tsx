@@ -10,29 +10,27 @@ import { z } from 'zod';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Gestão dos Users | Adicionar',
-        href: '/adicionar-user',
+        title: 'Gestão de Clientes | Editar',
+        href: '/editar-cliente',
     },
 ];
 
 const formSchema = z.object({
-    nome: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres').max(50),
-    email: z.string().email('Email inválido'),
-    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres').max(32),
+    nome: z.string().min(1, 'O nome deve ter pelo menos 1 caracter').max(50),
+    morada: z.string().min(1, 'Email inválido').max(190),
 });
 
-export default function AdicionarUser() {
+export default function EditarCliente({ cliente }: any) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            nome: '',
-            email: '',
-            password: '',
+            nome: cliente?.nome || '',
+            morada: cliente?.morada || ''
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        router.post('/adicionar-user', values, {
+        router.patch(route('editar-cliente.update', cliente.id), values, {
             onSuccess: () => {
             },
             onError: (errors) => {
@@ -42,7 +40,7 @@ export default function AdicionarUser() {
     }
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-4">
                     <FormField
@@ -52,7 +50,7 @@ export default function AdicionarUser() {
                             <FormItem>
                                 <FormLabel>Nome</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Nome exemplo" {...field} />
+                                    <Input placeholder="Novo nome" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -60,31 +58,18 @@ export default function AdicionarUser() {
                     />
                     <FormField
                         control={form.control}
-                        name="email"
+                        name="morada"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>Moraada</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="email@exemplo.com" {...field} />
+                                    <Input placeholder="Nova morada" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input type="password" placeholder="Insira aqui a password" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit" className='hover:bg-green-500'>Adicionar</Button>
+                    <Button type="submit">Guardar</Button>
                 </form>
             </Form>
         </AppLayout>
