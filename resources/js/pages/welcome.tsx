@@ -1,6 +1,7 @@
 import NavBar from '@/components/nav-homepage';
 import { type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
+
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
 
@@ -10,9 +11,9 @@ export default function Welcome() {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
-        
+    
             <div className="relative h-screen w-full bg-neutral-700">
-            <NavBar /> 
+                <NavBar /> 
                 <img src="/wearhousebg2.jpg" className="absolute inset-0 h-full w-full object-cover mix-blend-overlay"/>
                 <div className="relative z-10 flex h-full flex-col items-center justify-center p-8 text-center">
                     <h1 className="text-8xl font-bold text-lime-400">Armazenagem</h1>

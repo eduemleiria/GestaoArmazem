@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { AppWindowIcon, BookOpen, BriefcaseBusiness, Folder, HandCoinsIcon, Handshake, HandshakeIcon, LayoutGrid, LucideHeartHandshake, User2, User2Icon } from 'lucide-react';
+import { AppWindowIcon, BookOpen, BriefcaseBusiness, Folder, HandCoinsIcon, Handshake, HandshakeIcon, LayoutGrid, LucideHeartHandshake, Package, PackagePlus, User2, User2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -22,6 +22,11 @@ const mainNavItems: NavItem[] = [
         title: 'Gestão de Clientes',
         href: '/gestao-clientes/listar',
         icon: HandshakeIcon,
+    },
+    {
+        title: 'Gestão de Artigos',
+        href: '/gestao-artigos/listar',
+        icon: Package,
     },
     {
         title: 'Home Page',

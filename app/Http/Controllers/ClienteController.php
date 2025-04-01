@@ -24,7 +24,7 @@ class ClienteController extends Controller
             'morada' => $request['morada'],
             'idUser' => $request->user()->id,
         ]);
-        return redirect()->route('index')->with('success', 'Cliente adicionado com sucesso!');
+        return redirect()->route('cliente.index')->with('success', 'Cliente adicionado com sucesso!');
     }
 
     public function edit($id)
@@ -45,7 +45,7 @@ class ClienteController extends Controller
             'idUser'=> $request->user()->id,
         ]);
 
-        return redirect()->route('index')->with('success', 'Cliente alterado com sucesso!');
+        return redirect()->route('cliente.index')->with('success', 'Cliente alterado com sucesso!');
     }
 
     public function destroy($id)
@@ -53,9 +53,9 @@ class ClienteController extends Controller
         $cliente = Cliente::find($id);
         if ($cliente) {
             $cliente->delete();
-            return redirect()->route('index')->with('success', 'Cliente removido com sucesso!');
+            return redirect()->route('cliente.index')->with('success', 'Cliente removido com sucesso!');
         }
 
-        return redirect()->route('index')->with('error', 'Erro ao remover o cliente.');
+        return redirect()->route('cliente.index')->with('error', 'Erro ao remover o cliente.');
     }
 }
