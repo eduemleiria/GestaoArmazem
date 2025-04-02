@@ -43,7 +43,7 @@ class ArtigoController extends Controller
         ]);
 
         if (Artigo::where('nome', $request["nome"])->where('idCliente', $request["idCliente"])->exists()) {
-            return redirect()->route('index')->with('error', 'O artigo inserido já existe!');  
+            return redirect()->route('artigo.index')->with('error', 'O artigo inserido já existe!');
         } else {
             $artigo = Artigo::create([
                 'nome' => $validated['nome'],
@@ -53,6 +53,39 @@ class ArtigoController extends Controller
 
             return redirect()->route('artigo.index')->with('success', 'Artigo adicionado com sucesso!');
         }
+    }
+
+    public function edit($id)
+    {
+        $clientes = Cliente::all();
+        $artigo = Artigo::with('cliente:id,nome')->find($id);
+
+        return Inertia::render('gestao-artigos/editar-artigo', [
+            'artigo' => [
+                'id' => $artigo->id,
+                'nome' => $artigo->nome,
+                'idCliente' => $artigo->idCliente,
+                'nomeCliente' => $artigo->cliente?->nome ?? 'Sem Cliente',
+            ],
+            'clientes' => $clientes
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $artigo = Artigo::find($id);
+
+        if (Artigo::where('nome', $request["nome"])->where('idCliente', $request["idCliente"])->exists()) {
+            return redirect()->route('artigo.index')->with('error', 'O artigo atualizado já existe!');
+        } else {
+            $artigo->update([
+                'nome' => $request->input('nome'),
+                'idCliente' => $request->input('idCliente'),
+                'idUser' => $request->user()->id,
+            ]);
+        }
+
+        return redirect()->route('artigo.index')->with('success', 'Artigo alterado com sucesso!');
     }
 
     public function destroy($id)

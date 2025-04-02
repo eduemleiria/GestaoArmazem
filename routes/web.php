@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ArtigoController;
+use App\Http\Controllers\DocumentoController;
 use Inertia\Inertia;
 
 // Rotas da página inicial (Frontend)
@@ -57,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/remover-artigo/{id}', [ArtigoController::class, 'destroy'])->name('remover-artigo.destroy');
 
     // Rotas da Gestão de documentos
-
+    Route::get('gestao-documentos/listar', [DocumentoController::class, 'index'])->name('documento.index');
 });
 
 

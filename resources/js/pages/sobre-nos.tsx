@@ -12,6 +12,9 @@ export default function SobreNos() {
         <div>
             <NavBar />
             <p>Isto é o sobre nós</p>
+            <div className="">
+                
+            </div>
         </div>
         </>
     );
