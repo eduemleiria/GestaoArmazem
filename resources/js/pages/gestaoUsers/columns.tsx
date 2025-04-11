@@ -26,6 +26,10 @@ export const columns: ColumnDef<User>[] = [
         header: 'Email',
     },
     {
+        accessorKey: 'roles',
+        header: 'Role',
+    },
+    {
         accessorKey: 'created_at',
         header: () => 'Juntou-se dia',
         cell: ({ row }) => {

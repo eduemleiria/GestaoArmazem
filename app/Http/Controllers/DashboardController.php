@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Cliente;
+use App\Models\Documento;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function dashboard(){
-        $clientes = count(Cliente::all());
+        $numDocsEntHj = count(Documento::where('tipoDoc', 'Documento de Entrada')->whereDate('data', date("Y-m-d"))->get());
+
         return Inertia::render('dashboard', [
-            'clientes' => $clientes
+            'numDocsEntHj' => $numDocsEntHj
         ]);
     }
 }

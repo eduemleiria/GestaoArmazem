@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, Role } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -19,6 +19,7 @@ const formSchema = z.object({
     nome: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres').max(50),
     email: z.string().email('Email inválido'),
     password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres').max(32),
+    role: z.string(),
 });
 
 export default function AdicionarUser() {
@@ -28,18 +29,20 @@ export default function AdicionarUser() {
             nome: '',
             email: '',
             password: '',
+            role: '',
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         router.post('/adicionar-user', values, {
-            onSuccess: () => {
-            },
+            onSuccess: () => {},
             onError: (errors) => {
                 console.error(errors);
             },
         });
     }
+
+    const { roles } = usePage<{ roles: Role[] }>().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -84,7 +87,29 @@ export default function AdicionarUser() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className='hover:bg-green-500'>Adicionar</Button>
+                    <FormField
+                        control={form.control}
+                        name="role"
+                        render={({ field }) => (
+                            <FormItem className="pb-6">
+                                <FormLabel>Role</FormLabel>
+                                <FormControl>
+                                    <select {...field} className="w-full rounded-md border p-2">
+                                        <option>Selecione uma role...</option>
+                                        {roles.map((role) => (
+                                            <option key={role.id} value={role.id}>
+                                                {role.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="hover:bg-green-500">
+                        Adicionar
+                    </Button>
                 </form>
             </Form>
         </AppLayout>

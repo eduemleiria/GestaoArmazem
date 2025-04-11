@@ -1,16 +1,10 @@
-import DeleteUserDialog from '@/components/delete-user-dialog';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { EditIcon, MoreHorizontal } from 'lucide-react';
 import DeleteClienteDialog from '@/components/delete-cliente-dialog';
-
-export type Cliente = {
-    id: string;
-    nome: string;
-    morada: string;
-};
+import { Cliente } from '@/types';
 
 export const columns: ColumnDef<Cliente>[] = [
     {
@@ -39,7 +33,7 @@ export const columns: ColumnDef<Cliente>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                            <Link href={route('editar.edit', row.original.id)}>
+                            <Link href={route('editar-cliente.edit', row.original.id)}>
                                 <EditIcon className="mr-2" />
                                 Editar
                             </Link>

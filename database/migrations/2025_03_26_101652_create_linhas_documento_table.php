@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('linhas_documento', function (Blueprint $table) {
             $table->id();
             $table->integer('quantidade');
-            $table->string('localizacao');
+            $table->string('localizacao')->nullable();
             $table->foreignId('idArtigo')->references('id')->on('artigos');
             $table->foreignId('idDocumento')->references('id')->on('documentos');
             $table->foreignId('idUser')->references('id')->on('users');

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, Cliente } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useForm } from 'react-hook-form';
@@ -19,11 +19,6 @@ const formSchema = z.object({
     nome: z.string().min(1, 'Insira um nome válido!').max(150),
     idCliente: z.string().min(1, 'Selecione um cliente válido!').max(190),
 });
-
-export type Cliente = {
-    id: string;
-    nome: string;
-};
 
 export default function AdicionarCliente() {
     const { clientes } = usePage<{ clientes: Cliente[] }>().props;

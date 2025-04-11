@@ -1,11 +1,11 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { AppWindowIcon, BookOpen, BriefcaseBusiness, FileIcon, FilesIcon, Folder, HandCoinsIcon, Handshake, HandshakeIcon, LayoutGrid, LucideHeartHandshake, Package, PackagePlus, User2, User2Icon } from 'lucide-react';
+import { AppWindowIcon, Boxes, FilesIcon, HandshakeIcon, LayoutGrid, Package, User2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
+import { usePage } from '@inertiajs/react';
 
 const mainNavItems: NavItem[] = [
     {
@@ -17,6 +17,7 @@ const mainNavItems: NavItem[] = [
         title: 'Gestão de Users',
         href: '/gestao-users/listar',
         icon: User2Icon,
+        roles: ['admin'],
     },
     {
         title: 'Gestão de Clientes',
@@ -34,6 +35,11 @@ const mainNavItems: NavItem[] = [
         icon: FilesIcon,
     },
     {
+        title: 'Gestão de Paletes',
+        href: '/gestao-paletes/listar',
+        icon: Boxes,
+    },
+    {
         title: 'Home Page',
         href: '/',
         icon: AppWindowIcon,
@@ -41,6 +47,15 @@ const mainNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { roles } = usePage().props.auth as {
+        roles: string[];
+    };
+
+    const filtrarItems = mainNavItems.filter(item => {
+        if (!item.roles) return true;
+        return item.roles.some(role => roles.includes(role));
+    });
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -56,9 +71,8 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filtrarItems} />
             </SidebarContent>
-
             <SidebarFooter>
                 <NavUser />
             </SidebarFooter>

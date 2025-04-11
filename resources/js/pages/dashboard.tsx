@@ -14,11 +14,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface PageProps {
-    clientes: number;
+    numDocsEntHj: number;
 }
 
 export default function Dashboard() {
-    const { clientes } = usePage<PageProps>().props;
+    const { numDocsEntHj } = usePage<PageProps>().props;
+
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -28,7 +30,7 @@ export default function Dashboard() {
                         <PackagePlus className="size-11" />
                         <CardHeader className="items-center justify-center">
                             <CardDescription>Documentos de Entrada | Hoje</CardDescription>
-                            <CardTitle className="text-2xl font-semibold">6</CardTitle>
+                            <CardTitle className="text-2xl font-semibold">{numDocsEntHj}</CardTitle>
                         </CardHeader>
                     </Card>
                 </div>

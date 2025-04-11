@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('estado');
             $table->string('tipoDoc');
-            $table->dateTime('dataChegada')->nullable();
-            $table->dateTime('dataSaida')->nullable();
+            $table->dateTime('data')->nullable();
             $table->string('moradaC')->nullable();
             $table->string('moradaD')->nullable();
             $table->string('matricula')->nullable();

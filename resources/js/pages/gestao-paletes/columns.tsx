@@ -1,50 +1,32 @@
 import DeleteDocumentoDialog from '@/components/delete-documento-dialog';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Documento } from '@/types';
+import { Palete } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { CheckIcon, Clock10Icon, EditIcon, MoreHorizontal, SearchIcon } from 'lucide-react';
+import { EditIcon, MoreHorizontal, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 
-export const columns: ColumnDef<Documento>[] = [
+export const columns: ColumnDef<Palete>[] = [
     {
         accessorKey: 'id',
         header: 'Id',
     },
     {
-        accessorKey: 'nomeCliente',
-        header: 'Cliente',
+        accessorKey: 'nomeArtigo',
+        header: 'Artigo',
     },
     {
-        accessorKey: 'tipoDoc',
-        header: 'Tipo de Documento',
+        accessorKey: 'quantidade',
+        header: 'Quantidade',
     },
     {
-        accessorKey: 'data',
-        header: 'Data do Acontecimento Previsto',
+        accessorKey: 'localizacao',
+        header: 'Localização',
     },
     {
-        accessorKey: 'estado',
-        header: () => <div className="text-center">Estado</div>,
-        cell: ({ row }) => {
-            const estado: string = row.getValue('estado');
-            if (estado == 'Concluído') {
-                return (
-                    <div className="mx-auto flex w-27 items-center justify-center rounded bg-lime-400 text-right font-bold">
-                        <CheckIcon className="w-5 pr-1" />
-                        {estado}
-                    </div>
-                );
-            } else if (estado == 'Pendente') {
-                return (
-                    <div className="mx-auto flex w-27 items-center justify-center rounded bg-yellow-300 text-right font-bold">
-                        <Clock10Icon className="w-5 pr-1" />
-                        {estado}
-                    </div>
-                );
-            }
-        },
+        accessorKey: 'dataEntrada',
+        header: 'Data de Entrada',
     },
     {
         id: 'actions',
@@ -62,7 +44,6 @@ export const columns: ColumnDef<Documento>[] = [
                         return { editable: '' };
                 }
             };
-            const estadoAgr = getEstado(row.original.estado);
 
             return (
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -79,7 +60,7 @@ export const columns: ColumnDef<Documento>[] = [
                                 Detalhes
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild disabled={estadoAgr.editable}>
+                        <DropdownMenuItem asChild>
                             <Link href={route('editar-documento.edit', row.original.id)}>
                                 <EditIcon className="mr-2" />
                                 Editar

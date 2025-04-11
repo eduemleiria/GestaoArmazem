@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Documento extends Model
 {
@@ -13,8 +14,7 @@ class Documento extends Model
     protected $fillable = [
         'estado',
         'tipoDoc',
-        'dataChegada',
-        'dataSaida',
+        'data',
         'moradaC',
         'moradaD',
         'matricula',
