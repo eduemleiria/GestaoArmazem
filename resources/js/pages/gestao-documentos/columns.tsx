@@ -55,9 +55,9 @@ export const columns: ColumnDef<Documento>[] = [
             const getEstado = (estado: any): any => {
                 switch (estado) {
                     case 'Pendente':
-                        return { editable: 'false' };
+                        return { editable: false };
                     case 'Concluído':
-                        return { editable: 'true' };
+                        return { editable: true };
                     default:
                         return { editable: '' };
                 }

@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useArtigos } from '@/hooks/use-artigos';
 import AppLayout from '@/layouts/app-layout';
 import { Artigo, Cliente, Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -17,6 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+// Desta linha há 39, é os types e regras do formulários
 type Props = {
     documento: Documento;
     linhasDocumento: LinhaDocumento[];
@@ -31,6 +32,7 @@ const formSchema = z.object({
         z.object({
             idArtigo: z.string({ required_error: 'Selecione um artigo!' }),
             quantidade: z.string().min(1, 'A quantidade deve ser pelo menos 1!'),
+            localizacao: z.string(),
         }),
     ),
     dataP: z.string().optional(),
@@ -43,31 +45,36 @@ export default function AdicionarDocumento() {
         defaultValues: {
             idCliente: '',
             tipoDoc: '',
-            linhaDocumento: [{ idArtigo: '', quantidade: '' }],
+            linhaDocumento: [{ idArtigo: '', quantidade: '', localizacao: '' }],
             dataP: '',
             horaP: '',
         },
     });
 
+    // Isto é o que permite adicionar mais linhas de documento
     const { fields, append, remove } = useFieldArray({
         name: 'linhaDocumento',
         control: form.control,
     });
 
     const { clientes } = usePage<{ clientes: Cliente[] }>().props;
-    const [artigos, setArtigos] = useState<Artigo[]>([]);
-    const idCliente = form.watch('idCliente');
 
-    useEffect(() => {
-        if (idCliente) {
-            axios
-                .get(`/gestao-documentos/busca-artigos/${idCliente}`)
-                .then((response) => setArtigos(response.data))
-                .catch((error) => console.error(error));
-        } else {
-            setArtigos([]);
+    // Isto permite filtrar os artigos consuante o tipo de documento e o cliente escolhidos
+    const tipoDoc = form.watch('tipoDoc');
+    const idCliente = form.watch('idCliente');
+    const artigos = useArtigos(tipoDoc, idCliente);
+
+    const getTipoDoc = (tipoDoc: string): any => {
+        switch (tipoDoc) {
+            case 'Documento de Entrada':
+                return { doc: 'Entrar', data: 'Chegada' };
+            case 'Documento de Saída':
+                return { doc: 'Saír', data: 'Saída' };
+            default:
+                return { doc: '(Escolha um tipo de documento)', data: '(Escolha um tipo de documento)' };
         }
-    }, [idCliente]);
+    };
+    const tipoDocAgr = getTipoDoc(tipoDoc);
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         router.post('/adicionar-doc', values, {
@@ -130,8 +137,19 @@ export default function AdicionarDocumento() {
                         )}
                     />
                     <div>
-                        <p className="pb-3 font-bold">Paletes a entrar</p>
-                        {fields.map((field: any, index: any) => {
+                        <p className="pb-3 font-bold">Paletes a {tipoDocAgr.doc}</p>
+                        {fields.map((field, index) => {
+                            useEffect(() => {
+                                const artigoId = form.watch(`linhaDocumento.${index}.idArtigo`);
+                                const artigoEscolhido: any = artigos.find((a: any) => a.id === parseInt(artigoId));
+
+                                const localizacao = artigoEscolhido?.paletes?.[0]?.localizacao ?? '';
+
+                                if (localizacao) {
+                                    form.setValue(`linhaDocumento.${index}.localizacao`, localizacao);
+                                }
+                            }, [form.watch(`linhaDocumento.${index}.idArtigo`), artigos]);
+
                             return (
                                 <div key={field.id} className="grid-col-3 mb-3 grid grid-flow-col gap-3">
                                     <div className="col-span-1">
@@ -144,7 +162,7 @@ export default function AdicionarDocumento() {
                                                     <FormControl>
                                                         <select {...field} className="w-full rounded-md border p-2">
                                                             <option>Selecione um artigo...</option>
-                                                            {artigos.map((artigo) => (
+                                                            {artigos.map((artigo: Artigo) => (
                                                                 <option key={artigo.id} value={artigo.id}>
                                                                     {artigo.nome}
                                                                 </option>
@@ -156,7 +174,7 @@ export default function AdicionarDocumento() {
                                             )}
                                         />
                                     </div>
-                                    <div className="col-span-1">
+                                    <div className="col-span-1 w-20">
                                         <FormField
                                             control={form.control}
                                             name={`linhaDocumento.${index}.quantidade`}
@@ -165,6 +183,21 @@ export default function AdicionarDocumento() {
                                                     <FormLabel>Quantidade</FormLabel>
                                                     <FormControl>
                                                         <Input {...form.register(`linhaDocumento.${index}.quantidade`)} type="number" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="col-span-1 w-35">
+                                        <FormField
+                                            control={form.control}
+                                            name={`linhaDocumento.${index}.localizacao`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Localização</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} type="text" readOnly />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -187,14 +220,14 @@ export default function AdicionarDocumento() {
                         <Button
                             className="mt-3 hover:bg-lime-300"
                             onClick={() => {
-                                append({ idArtigo: '', quantidade: '' });
+                                append({ idArtigo: '', quantidade: '', localizacao: '' });
                             }}
                         >
                             Adicionar linha
                         </Button>
                         <div className="gap-4 py-6">
                             <p>
-                                Data e hora de <b>Chegada</b> prevista
+                                Data e hora de <b>{tipoDocAgr.data}</b> prevista
                             </p>
                             <div className="flex gap-4">
                                 <FormField

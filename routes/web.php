@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rotas da Gestão de documentos
     Route::get('gestao-documentos/listar', [DocumentoController::class, 'index'])->name('documento.index');
     Route::get('gestao-documentos/adicionar', [DocumentoController::class, 'create'])->name('adicionar-doc.create');
+    Route::get('/gestao-documentos/busca-artigos-com-paletes/{idCliente}', [DocumentoController::class, 'buscaArtigosPaletes']);
     Route::get('/gestao-documentos/busca-artigos/{idCliente}', [DocumentoController::class, 'buscaArtigos']);
     Route::post('adicionar-doc', [DocumentoController::class, 'store'])->name('adicionar-doc.store');
     Route::get('gestao-documentos/detalhes/{id}', [DocumentoController::class, 'show'])->name('detalhes-doc.show');

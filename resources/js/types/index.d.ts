@@ -75,6 +75,7 @@ export type Cliente = {
 export type Artigo = {
     id: string;
     nome: string;
+    localizacao?: string;
 };
 
 export type Palete = {

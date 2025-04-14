@@ -30,7 +30,7 @@ const formSchema = z.object({
                 message: 'Selecione um artigo válido!',
             }),
             quantidade: z.string().min(1, 'A quantidade deve ser pelo menos 1!'),
-            localizacao: z.string().min(1, 'Insira uma localização válida!'),
+            localizacao: z.string(),
         }),
     ),
     dataP: z.string(),

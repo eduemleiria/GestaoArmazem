@@ -20,4 +20,9 @@ class Artigo extends Model
     {
         return $this->belongsTo(Cliente::class, 'idCliente');
     }
+
+    public function paletes()
+    {
+        return $this->hasMany(Palete::class, 'idArtigo');
+    }
 }
