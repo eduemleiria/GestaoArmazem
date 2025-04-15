@@ -76,6 +76,35 @@ export default function AdicionarDocumento() {
     };
     const tipoDocAgr = getTipoDoc(tipoDoc);
 
+    useEffect(() => {
+        const tipoDoc = form.getValues('tipoDoc'); 
+
+        if (tipoDoc === 'Documento de Entrada') {
+            fields.forEach((field, index) => {
+                form.setValue(`linhaDocumento.${index}.localizacao`, '');
+            });
+            return;
+        }
+
+        const observar = form.watch((value, { name }) => {
+            if (!name?.includes('idArtigo')) return;
+
+            const match = name.match(/linhaDocumento\.(\d+)\.idArtigo/);
+            const index = match ? Number(match[1]) : -1;
+            if (index === -1) return;
+
+            if (tipoDoc === 'Documento de Saída') {
+                const artigoId: any = value?.linhaDocumento?.[index]?.idArtigo;
+                const artigoEscolhido: any = artigos.find((a: any) => a.id === parseInt(artigoId));
+                const localizacao = artigoEscolhido?.paletes?.[0]?.localizacao ?? '';
+
+                form.setValue(`linhaDocumento.${index}.localizacao`, localizacao);
+            }
+        });
+
+        return () => observar.unsubscribe();
+    }, [artigos, form, fields]);
+
     function onSubmit(values: z.infer<typeof formSchema>) {
         router.post('/adicionar-doc', values, {
             onSuccess: () => {},
@@ -139,17 +168,6 @@ export default function AdicionarDocumento() {
                     <div>
                         <p className="pb-3 font-bold">Paletes a {tipoDocAgr.doc}</p>
                         {fields.map((field, index) => {
-                            useEffect(() => {
-                                const artigoId = form.watch(`linhaDocumento.${index}.idArtigo`);
-                                const artigoEscolhido: any = artigos.find((a: any) => a.id === parseInt(artigoId));
-
-                                const localizacao = artigoEscolhido?.paletes?.[0]?.localizacao ?? '';
-
-                                if (localizacao) {
-                                    form.setValue(`linhaDocumento.${index}.localizacao`, localizacao);
-                                }
-                            }, [form.watch(`linhaDocumento.${index}.idArtigo`), artigos]);
-
                             return (
                                 <div key={field.id} className="grid-col-3 mb-3 grid grid-flow-col gap-3">
                                     <div className="col-span-1">

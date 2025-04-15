@@ -3,8 +3,6 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import NavBar from '@/components/nav-homepage';
 
 export default function Welcome() {
-    const { auth } = usePage<SharedData>().props;
-
     return (
         <>
             <Head title="Contactos">

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, Cliente, Artigo } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useForm } from 'react-hook-form';
@@ -22,12 +22,7 @@ const formSchema = z.object({
     }),
 });
 
-export type Cliente = {
-    id: string;
-    nome: string;
-};
-
-export default function EditarArtigo({ artigo }: any) {
+export default function EditarArtigo({ artigo }: { artigo: Artigo} ) {
     const { clientes } = usePage<{ clientes: Cliente[] }>().props;
 
     const form = useForm<z.infer<typeof formSchema>>({

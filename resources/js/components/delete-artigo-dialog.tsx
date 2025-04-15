@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { TrashIcon } from "lucide-react";
+import { Artigo } from "@/types";
 import {
     AlertDialog,
     AlertDialogTrigger,
@@ -13,7 +14,7 @@ import {
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-export default function DeleteArtigoButton({ artigoId }: { artigoId: any }) {
+export default function DeleteArtigoButton({ artigoId }: { artigoId: Artigo }) {
     const [open, setOpen] = useState(false);
 
     const handleDelete = () => {

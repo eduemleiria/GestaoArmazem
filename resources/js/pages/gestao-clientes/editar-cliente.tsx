@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, Cliente } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from '@inertiajs/react';
+import { router, Head } from '@inertiajs/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -20,19 +20,18 @@ const formSchema = z.object({
     morada: z.string().min(1, 'Email inválido').max(190),
 });
 
-export default function EditarCliente({ cliente }: any) {
+export default function EditarCliente({ cliente }: { cliente: Cliente }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             nome: cliente?.nome || '',
-            morada: cliente?.morada || ''
+            morada: cliente?.morada || '',
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         router.patch(route('editar-cliente.update', cliente.id), values, {
-            onSuccess: () => {
-            },
+            onSuccess: () => {},
             onError: (errors) => {
                 console.error(errors);
             },
@@ -40,7 +39,8 @@ export default function EditarCliente({ cliente }: any) {
     }
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Gestão de Clientes | Editar" />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-4">
                     <FormField

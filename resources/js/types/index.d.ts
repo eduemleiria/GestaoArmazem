@@ -70,12 +70,14 @@ export type Role = {
 export type Cliente = {
     id: string;
     nome: string;
+    morada: string;
 };
 
 export type Artigo = {
     id: string;
     nome: string;
     localizacao?: string;
+    idCliente: string;
 };
 
 export type Palete = {

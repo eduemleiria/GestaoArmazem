@@ -1,13 +1,8 @@
-import { type SharedData } from '@/types';
+import { type SharedData, User } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { LogOut } from 'lucide-react';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 
-interface UserMenuContentProps {
-    user: User;
-}
-
-export default function NavBar({user}: UserMenuContentProps) {
+export default function NavBar() {
     const { auth } = usePage<SharedData>().props;
     const cleanup = useMobileNavigation();
 

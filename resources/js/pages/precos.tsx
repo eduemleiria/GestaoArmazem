@@ -1,10 +1,7 @@
-import { type SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
 import NavBar from '@/components/nav-homepage';
+import { Head } from '@inertiajs/react';
 
 export default function Welcome() {
-    const { auth } = usePage<SharedData>().props;
-
     return (
         <>
             <Head title="Precos">

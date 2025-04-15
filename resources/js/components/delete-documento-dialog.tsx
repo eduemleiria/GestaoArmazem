@@ -12,8 +12,9 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { Documento } from "@/types";
 
-export default function DeleteDocumentoButton({ documentoId, onDelete }: { documentoId: any; onDelete?: ()=> void; }) {
+export default function DeleteDocumentoButton({ documentoId, onDelete }: { documentoId: Documento; onDelete?: ()=> void; }) {
     const [open, setOpen] = useState(false);
 
     const handleDelete = () => {

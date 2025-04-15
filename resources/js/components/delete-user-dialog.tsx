@@ -1,27 +1,28 @@
-import { useState } from "react";
-import { router } from "@inertiajs/react";
-import { TrashIcon } from "lucide-react";
 import {
     AlertDialog,
-    AlertDialogTrigger,
+    AlertDialogAction,
+    AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogCancel,
-    AlertDialogAction,
-} from "@/components/ui/alert-dialog";
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { User } from '@/types';
+import { router } from '@inertiajs/react';
+import { TrashIcon } from 'lucide-react';
+import { useState } from 'react';
 
 export default function DeleteUserButton({ userId }: { userId: any }) {
     const [open, setOpen] = useState(false);
 
     const handleDelete = () => {
-        router.delete(route("remover-user.destroy", userId), {
+        router.delete(route('remover-user.destroy', userId), {
             onSuccess: () => {
                 setOpen(false);
             },
-            onError: () => alert("Erro ao remover o utilizador"),
+            onError: () => alert('Erro ao remover o utilizador'),
         });
     };
 
@@ -29,16 +30,14 @@ export default function DeleteUserButton({ userId }: { userId: any }) {
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
                 <button className="flex items-center text-sm font-bold text-red-600 hover:text-red-400">
-                    <TrashIcon className="ml-1 p-1 mr-3" />
+                    <TrashIcon className="mr-3 ml-1 p-1" />
                     Remover
                 </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Quer mesmo apagar este user?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. Isto removerá permanentemente o user do sistema.
-                    </AlertDialogDescription>
+                    <AlertDialogDescription>Esta ação não pode ser desfeita. Isto removerá permanentemente o user do sistema.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
