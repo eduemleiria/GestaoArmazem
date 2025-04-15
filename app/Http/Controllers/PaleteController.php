@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Palete;
+use App\Models\Cliente;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -10,13 +11,15 @@ class PaleteController extends Controller
 {
     public function index()
     {
-        $paletes = Palete::with('artigo:id,nome')->get()->map(function ($palete) {
+        $paletes = Palete::with('artigo:id,nome,idCliente')->get()->map(function ($palete) {
+            $cliente = Cliente::where('id', $palete->artigo?->idCliente)->pluck('nome');
             return [
                 'id' => $palete->id,
                 'quantidade' => $palete->quantidade,
                 'localizacao' => $palete->localizacao,
                 'dataEntrada' => $palete->dataEntrada,
                 'nomeArtigo' => $palete->artigo?->nome ?? 'Sem Artigo',
+                'clienteArtigo' => $cliente,
             ];
         });
 

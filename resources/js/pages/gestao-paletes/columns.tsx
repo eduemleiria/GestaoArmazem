@@ -13,6 +13,10 @@ export const columns: ColumnDef<Palete>[] = [
         header: 'Id',
     },
     {
+        accessorKey: 'clienteArtigo',
+        header: 'Cliente',
+    },
+    {
         accessorKey: 'nomeArtigo',
         header: 'Artigo',
     },
