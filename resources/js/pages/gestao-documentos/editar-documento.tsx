@@ -18,6 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+// Validações do formulário com o zod
 const formSchema = z.object({
     tipoDoc: z.string(),
     idCliente: z.union([z.string(), z.number()]).refine((val) => Number(val) > 0, {
@@ -31,6 +32,7 @@ const formSchema = z.object({
             }),
             quantidade: z.string().min(1, 'A quantidade deve ser pelo menos 1!'),
             localizacao: z.string(),
+            confirmado: z.string(),
         }),
     ),
     dataP: z.string(),
@@ -43,10 +45,12 @@ type Props = {
 };
 
 export default function EditarDocumento({ documento, linhasDocumento }: Props) {
+    // Isto inicializa a informação recebida do backend
     const { userLogadoRole }: any = usePage<{ userLogadoRole: Role[] }>().props;
     const { clientes }: any = usePage<{ clientes: Cliente[] }>().props;
     const [artigos, setArtigos] = useState<Artigo[]>([]);
 
+    // Isto cria a estrutura do formulário com os correspondentes valores
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -57,42 +61,38 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                 idArtigo: linha.idArtigo || '',
                 quantidade: linha.quantidade?.toString() || '0',
                 localizacao: linha.localizacao?.toString() || '',
+                confirmado: linha.confirmado?.toString() || 'Confirmar',
             })),
             dataP: documento?.data || '',
             horaP: documento?.hora || '',
         },
     });
 
-    const getTipoDoc = (tipoDoc: string): any => {
+    // Recebe o tipo de documento e muda consoante o seu valor (focado em estética)
+    const getTipoDocTexto = (tipoDoc: string): string => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
-                return { doc: 'Chegada' };
+                return 'Chegada';
             case 'Documento de Saída':
-                return { doc: 'Saída' };
+                return 'Saída';
             default:
-                return { doc: '' };
+                return '';
         }
     };
-    const tipoDocAgr = getTipoDoc(documento?.tipoDoc);
 
-    const [showText, setShowText] = useState(tipoDocAgr.doc);
+    const [showText, setShowText] = useState(getTipoDocTexto(documento?.tipoDoc));
 
     const handletext = (e: any) => {
-        const getvalue = e.target.value;
-        if (getvalue == 'Documento de Entrada') {
-            const show = 'Chegada';
-            setShowText(show);
-        } else if (getvalue == 'Documento de Saída') {
-            const show = 'Saída';
-            setShowText(show);
-        }
+        setShowText(getTipoDocTexto(e.target.value));
     };
 
+    // Isto inicializa os campos dinamicos com o react-hook-form lingado-os ao form.control linhaDocumento
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: 'linhaDocumento',
     });
 
+    // Isto fica de vigia se o cliente foi trocado e vai buscar os artigos desse cliente
     const idCliente = form.watch('idCliente');
 
     useEffect(() => {
@@ -106,6 +106,60 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
         }
     }, [idCliente]);
 
+    // Lógica de adicionar linha consuante o resto e a quantidade original
+    const [confirmado, setConfirmado] = useState<Record<number, string>>({});
+    const [quantidadeOriginal, setQuantidadeOriginal] = useState<Record<number, number>>({});
+
+    useEffect(() => {
+        const values = form.getValues();
+        const originais: Record<number, number> = {};
+
+        values.linhaDocumento?.forEach((item: any, idx: number) => {
+            if (item?.quantidade != null) {
+                originais[idx] = parseInt(item.quantidade);
+            }
+        });
+
+        setQuantidadeOriginal(originais);
+    }, []);
+
+    const confirmaHandler = (index: number) => {
+        const values = form.getValues();
+        const linha = values.linhaDocumento[index];
+
+        const original = quantidadeOriginal[index];
+        const confirmado: any = parseInt(linha.quantidade);
+
+        const resto = original - confirmado;
+
+        setConfirmado((prev) => ({
+            ...prev,
+            [index]: prev[index] === 'Confirmado' ? 'Confirmar' : 'Confirmado',
+        }));
+        form.setValue(`linhaDocumento.${index}.confirmado`, 'Confirmado');
+
+        if (!confirmado[index] && resto > 0) {
+            append({
+                id: linha.id + 1,
+                idArtigo: linha.idArtigo,
+                quantidade: resto,
+                localizacao: '',
+            });
+
+            setQuantidadeOriginal((prev) => ({
+                ...prev,
+                [fields.length]: resto,
+            }));
+        }
+    };
+
+    // Desativa os campos se o botão estiver como "confirmado"
+    const desativado = (index: number) => confirmado[index] === 'Confirmado';
+
+    const resetEdit = () => {
+        window.location.reload();
+    };
+
     const getUserLogadoRole = (role: string): any => {
         switch (role) {
             case 'gerente':
@@ -113,6 +167,23 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                     cor: 'bg-gray-100',
                     editable: 'true',
                     buttonSave: <SaveDocumentoDialog documentoId={documento.id} values={form.getValues()} />,
+                    btnExtraLinha: (index: number) => (
+                        <div>
+                            <Button
+                                id={`confirmar-${index}`}
+                                onClick={() => confirmaHandler(index)}
+                                disabled={desativado(index)}
+                                className={`hover:bg-green-500`}
+                            >
+                                {confirmado[index] || 'Confirmar'}
+                            </Button>
+                        </div>
+                    ),
+                    btnResetEdit: (
+                        <Button onClick={() => resetEdit()} className="flex w-25 bg-red-400 hover:bg-red-600 hover:font-bold">
+                            Resetar
+                        </Button>
+                    ),
                 };
             default:
                 return {
@@ -123,6 +194,17 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                             Guardar
                         </Button>
                     ),
+                    btnExtraLinha: (index: number) => (
+                        <Button
+                            onClick={() => {
+                                remove(index);
+                            }}
+                            className="bg-red-400 text-black hover:bg-red-500 hover:text-white"
+                        >
+                            Remover linha
+                        </Button>
+                    ),
+                    btnResetEdit: '',
                 };
         }
     };
@@ -190,83 +272,78 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                             </FormItem>
                         )}
                     />
-                    <p className="font-bold">Paletes a entrar</p>
-                    {fields.map((field: any, index: any) => {
-                        return (
-                            <div key={field.id} className="grid-col-3 mb-3 grid grid-flow-col gap-3">
-                                <div className="col-span-1">
-                                    <FormField
-                                        control={form.control}
-                                        name={`linhaDocumento.${index}.idArtigo`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Artigo</FormLabel>
-                                                <FormControl>
-                                                    <select {...field} className={`w-full rounded-md border p-2`}>
-                                                        <option value="">Selecione um artigo...</option>
-                                                        {artigos.map((artigo) => (
-                                                            <option key={artigo.id} value={artigo.id}>
-                                                                {artigo.nome}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="col-span-1">
-                                    <FormField
-                                        control={form.control}
-                                        name={`linhaDocumento.${index}.quantidade`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Quantidade</FormLabel>
-                                                <FormControl>
-                                                    <Input {...form.register(`linhaDocumento.${index}.quantidade`)} type="number" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="col-span-1">
-                                    <FormField
-                                        control={form.control}
-                                        name={`linhaDocumento.${index}.localizacao`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Localização</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...form.register(`linhaDocumento.${index}.localizacao`)}
-                                                        type="text"
-                                                        disabled={!userRole.editable}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="col-span-1 mt-6 ml-2">
-                                    <Button
-                                        onClick={() => {
-                                            remove(index);
-                                        }}
-                                        className="bg-red-400 text-black hover:bg-red-500 hover:text-white"
-                                    >
-                                        Remover linha
-                                    </Button>
-                                </div>
+                    <div className="flex justify-between">
+                        <p className="font-bold">Paletes a entrar</p>
+                        {userRole.btnResetEdit}
+                    </div>
+                    {fields.map((field: any, index: number) => (
+                        <div key={field.id || index} className="grid-col-3 mb-3 grid grid-flow-col gap-3">
+                            <div className="col-span-1">
+                                <FormField
+                                    control={form.control}
+                                    name={`linhaDocumento.${index}.idArtigo`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Artigo</FormLabel>
+                                            <FormControl>
+                                                <select
+                                                    {...field}
+                                                    className={`w-full rounded-md border p-2 ${userRole.cor}`}
+                                                    disabled={userRole.editable}
+                                                >
+                                                    <option>Selecione um artigo...</option>
+                                                    {artigos.map((artigo) => (
+                                                        <option key={artigo.id} value={artigo.id}>
+                                                            {artigo.nome}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
-                        );
-                    })}
+
+                            <div className="col-span-1">
+                                <FormField
+                                    control={form.control}
+                                    name={`linhaDocumento.${index}.quantidade`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Quantidade</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={desativado(index)} type="number" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="col-span-1">
+                                <FormField
+                                    control={form.control}
+                                    name={`linhaDocumento.${index}.localizacao`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Localização</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} type="text" disabled={desativado(index) || !userRole.editable} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="col-span-1 mt-6 ml-2">{userRole.btnExtraLinha(index)}</div>
+                        </div>
+                    ))}
                     <Button
                         className="w-46 hover:bg-green-500"
                         onClick={() => {
-                            append({ id: 0, idArtigo: '', quantidade: '', localizacao: '' });
+                            append({ id: 0, idArtigo: '', quantidade: '', localizacao: '', confirmado: '' });
                         }}
                     >
                         Adicionar linha
