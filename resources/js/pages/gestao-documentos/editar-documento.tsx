@@ -184,6 +184,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                             Resetar
                         </Button>
                     ),
+                    btnAddLinha: '',
                 };
             default:
                 return {
@@ -205,6 +206,16 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                         </Button>
                     ),
                     btnResetEdit: '',
+                    btnAddLinha: (
+                        <Button
+                            className="w-46 hover:bg-green-500"
+                            onClick={() => {
+                                append({ id: 0, idArtigo: '', quantidade: '', localizacao: '', confirmado: '' });
+                            }}
+                        >
+                            Adicionar linha
+                        </Button>
+                    ),
                 };
         }
     };
@@ -340,14 +351,8 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                             <div className="col-span-1 mt-6 ml-2">{userRole.btnExtraLinha(index)}</div>
                         </div>
                     ))}
-                    <Button
-                        className="w-46 hover:bg-green-500"
-                        onClick={() => {
-                            append({ id: 0, idArtigo: '', quantidade: '', localizacao: '', confirmado: '' });
-                        }}
-                    >
-                        Adicionar linha
-                    </Button>
+                    <div className="">{userRole.btnAddLinha}</div>
+
                     <div className="gap-4 py-3">
                         <p>
                             Data e hora de <b>{showText}</b> prevista

@@ -198,13 +198,13 @@ class DocumentoController extends Controller
                 $contaLinhas = count($request->linhaDocumento);
 
                 foreach ($request->linhaDocumento as $linha) {
-                    /*for($i = 0; $i <= $contaLinhas - 1; $i++){
+                    for($i = 0; $i <= $contaLinhas - 1; $i++){
                         if($request->linhaDocumento[$i]['localizacao'] == $request->linhaDocumento[$i + 1]['localizacao']){
                             return redirect()->route('documento.index')->with('error', 'A mesma localização não pode ser inserida mais que 1 vez!');
                         }else{
-                            
+                            break;
                         }
-                    }*/
+                    }
 
                     if (!Palete::where('localizacao', '=', $linha['localizacao'])->first()) {
                         if (linhasDocumento::where('id', $linha['id'])->first()) {
