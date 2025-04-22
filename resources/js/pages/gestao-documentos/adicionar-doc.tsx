@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Artigo, Cliente, Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -77,7 +78,7 @@ export default function AdicionarDocumento() {
     const tipoDocAgr = getTipoDoc(tipoDoc);
 
     useEffect(() => {
-        const tipoDoc = form.getValues('tipoDoc'); 
+        const tipoDoc = form.getValues('tipoDoc');
 
         if (tipoDoc === 'Documento de Entrada') {
             fields.forEach((field, index) => {
@@ -95,10 +96,16 @@ export default function AdicionarDocumento() {
 
             if (tipoDoc === 'Documento de Saída') {
                 const artigoId: any = value?.linhaDocumento?.[index]?.idArtigo;
-                const artigoEscolhido: any = artigos.find((a: any) => a.id === parseInt(artigoId));
-                const localizacao = artigoEscolhido?.paletes?.[0]?.localizacao ?? '';
-
-                form.setValue(`linhaDocumento.${index}.localizacao`, localizacao);
+                axios
+                    .get(`/gestao-documentos/busca-palete-antiga/${artigoId}`)
+                    .then((res) => {
+                        const palete = res.data;
+                        const localizacao = palete?.localizacao ?? '';
+                        form.setValue(`linhaDocumento.${index}.localizacao`, localizacao);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
             }
         });
 

@@ -40,6 +40,13 @@ class DocumentoController extends Controller
         ]);
     }
 
+    public function buscaArtigos($idCliente)
+    {
+        $artigos = Artigo::where('idCliente', $idCliente)->get();
+
+        return response()->json($artigos);
+    }
+
     public function buscaArtigosPaletes($idCliente)
     {
         $artigos = Artigo::where('idCliente', $idCliente)
@@ -50,12 +57,11 @@ class DocumentoController extends Controller
         return response()->json($artigos);
     }
 
-
-    public function buscaArtigos($idCliente)
+    public function buscaArtigosPaletesMaisAntigas($idArtigo)
     {
-        $artigos = Artigo::where('idCliente', $idCliente)->get();
+        $palete = Palete::where('idArtigo', $idArtigo)->orderBy('dataEntrada', 'asc')->orderBy('quantidade', 'asc')->first();
 
-        return response()->json($artigos);
+        return response()->json($palete);
     }
 
     public function store(Request $request)
@@ -194,14 +200,18 @@ class DocumentoController extends Controller
             } else if ($userLogadoRole == "gerente") {
 
                 $documento = Documento::find($id);
-                
+
                 $contaLinhas = count($request->linhaDocumento);
 
                 foreach ($request->linhaDocumento as $linha) {
-                    for($i = 0; $i <= $contaLinhas - 1; $i++){
-                        if($request->linhaDocumento[$i]['localizacao'] == $request->linhaDocumento[$i + 1]['localizacao']){
+                    for ($i = 0; $i <= $contaLinhas - 1; $i++) {
+                        if ($contaLinhas <= 1) {
+                            break;
+                        }
+
+                        if ($request->linhaDocumento[$i]['localizacao'] == $request->linhaDocumento[$i + 1]['localizacao']) {
                             return redirect()->route('documento.index')->with('error', 'A mesma localização não pode ser inserida mais que 1 vez!');
-                        }else{
+                        } else {
                             break;
                         }
                     }
@@ -214,7 +224,7 @@ class DocumentoController extends Controller
                                 'localizacao' => $linha['localizacao'],
                                 'idUser' => $request->user()->id,
                             ]);
-                        }else{
+                        } else {
                             linhasDocumento::where('id', $linha['id'])->create([
                                 'idDocumento' => $request['id'],
                                 'idArtigo' => $linha['idArtigo'],

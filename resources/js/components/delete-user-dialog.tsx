@@ -14,7 +14,7 @@ import { router } from '@inertiajs/react';
 import { TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 
-export default function DeleteUserButton({ userId }: { userId: any }) {
+export default function DeleteUserButton({ userId }: { userId: number }) {
     const [open, setOpen] = useState(false);
 
     const handleDelete = () => {

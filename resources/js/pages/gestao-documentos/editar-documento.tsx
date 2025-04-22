@@ -272,7 +272,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                                 <FormControl>
                                     <select {...field} className={`w-full rounded-md border p-2 ${userRole.cor}`} disabled={userRole.editable}>
                                         <option value="">Selecione um cliente...</option>
-                                        {clientes?.map((cliente: any) => (
+                                        {clientes?.map((cliente: Cliente) => (
                                             <option key={cliente.id} value={cliente.id}>
                                                 {cliente.nome}
                                             </option>
