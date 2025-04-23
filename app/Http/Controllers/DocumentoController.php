@@ -14,6 +14,30 @@ use Illuminate\Support\Facades\Auth;
 
 class DocumentoController extends Controller
 {
+    public function buscaArtigos($idCliente)
+    {
+        $artigos = Artigo::where('idCliente', $idCliente)->get();
+
+        return response()->json($artigos);
+    }
+
+    public function buscaArtigosPaletes($idCliente)
+    {
+        $artigos = Artigo::where('idCliente', $idCliente)
+            ->whereHas('paletes')
+            ->with('paletes')
+            ->get();
+
+        return response()->json($artigos);
+    }
+
+    public function buscaArtigosPaletesMaisAntigas($idArtigo)
+    {
+        $palete = Palete::where('idArtigo', $idArtigo)->orderBy('dataEntrada', 'asc')->orderBy('quantidade', 'asc')->first();
+
+        return response()->json($palete);
+    }
+
     public function index()
     {
         $documentos = Documento::with('cliente:id,nome')->get()->map(function ($documento) {
@@ -40,30 +64,6 @@ class DocumentoController extends Controller
         ]);
     }
 
-    public function buscaArtigos($idCliente)
-    {
-        $artigos = Artigo::where('idCliente', $idCliente)->get();
-
-        return response()->json($artigos);
-    }
-
-    public function buscaArtigosPaletes($idCliente)
-    {
-        $artigos = Artigo::where('idCliente', $idCliente)
-            ->whereHas('paletes')
-            ->with('paletes')
-            ->get();
-
-        return response()->json($artigos);
-    }
-
-    public function buscaArtigosPaletesMaisAntigas($idArtigo)
-    {
-        $palete = Palete::where('idArtigo', $idArtigo)->orderBy('dataEntrada', 'asc')->orderBy('quantidade', 'asc')->first();
-
-        return response()->json($palete);
-    }
-
     public function store(Request $request)
     {
         $data = $request["dataP"];
@@ -73,25 +73,44 @@ class DocumentoController extends Controller
 
         $datahora = new DateTime($datahoraJuntar);
 
-        if ($request['tipoDoc'] == "Documento de Entrada" || $request['tipoDoc'] == "Documento de Saída") {
-            $documento = Documento::create([
-                'tipoDoc' => $request['tipoDoc'],
-                'idCliente' => $request['idCliente'],
-                'data' => $datahora->format('Y-m-d H:i:s'),
-                'estado' => "Pendente",
-                'idUser' => $request->user()->id,
-            ]);
+        $documento = Documento::create([
+            'tipoDoc' => $request['tipoDoc'],
+            'idCliente' => $request['idCliente'],
+            'data' => $datahora->format('Y-m-d H:i:s'),
+            'estado' => "Pendente",
+            'idUser' => $request->user()->id,
+        ]);
 
-            foreach ($request->linhaDocumento as $linha) {
+        foreach ($request->linhaDocumento as $linha) {
+            $totalPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])->sum('quantidade');
+
+            if ($request['tipoDoc'] == "Documento de Entrada") {
                 LinhasDocumento::create([
                     'idDocumento' => $documento->id,
                     'idArtigo' => $linha['idArtigo'],
-                    'localizacao' => $linha['localizacao'] ?? null,
                     'quantidade' => $linha['quantidade'],
+                    'localizacao' => $linha['localizacao'] ?? null,
                     'idUser' => $request->user()->id,
                 ]);
+            } else if ($request['tipoDoc'] == "Documento de Saída") {
+                if ($linha['quantidade'] > $totalPaletes) {
+                    $ultimoDoc = Documento::orderBy('id', 'desc')->first();
+                    LinhasDocumento::where('idDocumento', $ultimoDoc->id)->delete();
+                    Documento::where('id', $ultimoDoc->id)->delete();
+
+                    return redirect()->route('documento.index')->with('error', 'Não existem paletes suficientes!');
+                } else {
+                    LinhasDocumento::create([
+                        'idDocumento' => $documento->id,
+                        'idArtigo' => $linha['idArtigo'],
+                        'quantidade' => $linha['quantidade'],
+                        'localizacao' => $linha['localizacao'] ?? null,
+                        'idUser' => $request->user()->id,
+                    ]);
+                }
             }
         }
+
         return redirect()->route('documento.index')->with('success', 'Documento adicionado com sucesso!');
     }
 
@@ -198,7 +217,6 @@ class DocumentoController extends Controller
 
                 return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
             } else if ($userLogadoRole == "gerente") {
-
                 $documento = Documento::find($id);
 
                 $contaLinhas = count($request->linhaDocumento);
