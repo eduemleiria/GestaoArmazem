@@ -4,13 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { EditIcon, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import DeleteUserDialog from '@/components/delete-user-dialog';
-
-export type User = {
-    id: string;
-    name: string;
-    email: string;
-    created_at: Date;
-};
+import { User } from '@/types';
 
 export const columns: ColumnDef<User>[] = [
     {

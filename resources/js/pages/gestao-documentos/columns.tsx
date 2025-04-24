@@ -86,7 +86,7 @@ export const columns: ColumnDef<Documento>[] = [
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <DeleteDocumentoDialog documentoId={row.original.id} onDelete={() => setDropdownOpen(false)} />
+                            <DeleteDocumentoDialog documentoId={row.original.id} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

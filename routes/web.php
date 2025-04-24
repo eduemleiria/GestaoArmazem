@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rotas da Gestão de Paletes
     Route::get('gestao-paletes/listar', [PaleteController::class, 'index'])->name('paletes.index');
+    Route::delete('/remover-palete/{id}', [PaleteController::class, 'destroy'])->name('remover-palete.destroy');
 
 });
 

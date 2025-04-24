@@ -44,7 +44,7 @@ export interface User {
 }
 
 export type Documento = {
-    id: string;
+    id: number;
     estado: string;
     tipoDoc: string;
     data: string;
@@ -68,20 +68,20 @@ export type Role = {
 };
 
 export type Cliente = {
-    id: string;
+    id: number;
     nome: string;
     morada: string;
 };
 
 export type Artigo = {
-    id: string;
+    id: number;
     nome: string;
     localizacao?: string;
     idCliente: string;
 };
 
 export type Palete = {
-    id: string;
+    id: number;
     idArtigo: string;
     quantidade: string;
     localizacao: string;

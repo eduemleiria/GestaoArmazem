@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { TrashIcon } from "lucide-react";
-import { Artigo } from "@/types";
 import {
     AlertDialog,
     AlertDialogTrigger,
@@ -14,15 +13,15 @@ import {
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-export default function DeleteArtigoButton({ artigoId }: { artigoId: number }) {
+export default function DeletePaleteButton({ paleteId }: { paleteId: number }) {
     const [open, setOpen] = useState(false);
 
     const handleDelete = () => {
-        router.delete(route("remover-artigo.destroy", artigoId), {
+        router.delete(route("remover-palete.destroy", paleteId), {
             onSuccess: () => {
                 setOpen(false);
             },
-            onError: () => alert("Erro ao remover o artigo"),
+            onError: () => alert("Erro ao remover o cliente"),
         });
     };
 
@@ -36,9 +35,10 @@ export default function DeleteArtigoButton({ artigoId }: { artigoId: number }) {
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Quer mesmo apagar este artigo?</AlertDialogTitle>
+                    <AlertDialogTitle>Quer mesmo apagar esta palete?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. Isto removerá permanentemente o artigo do sistema.
+                        Esta ação não pode ser desfeita. Isto removerá permanentemente a palete do sistema. <br/>
+                        E poderá danificar os documentos relacionados com a mesma!
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

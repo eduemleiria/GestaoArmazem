@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Cliente } from "@/types";
 
-export default function DeleteUserButton({ clienteId }: { clienteId: Cliente }) {
+export default function DeleteUserButton({ clienteId }: { clienteId: number }) {
     const [open, setOpen] = useState(false);
 
     const handleDelete = () => {

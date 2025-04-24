@@ -1,4 +1,4 @@
-import DeleteDocumentoDialog from '@/components/delete-documento-dialog';
+import DeletePaleteDialog from '@/components/delete-palete-dialog';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Palete } from '@/types';
@@ -38,17 +38,6 @@ export const columns: ColumnDef<Palete>[] = [
         cell: ({ row }) => {
             const [dropdownOpen, setDropdownOpen] = useState(false);
 
-            const getEstado = (estado: any): any => {
-                switch (estado) {
-                    case 'Pendente':
-                        return { editable: 'false' };
-                    case 'Concluído':
-                        return { editable: 'true' };
-                    default:
-                        return { editable: '' };
-                }
-            };
-
             return (
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
@@ -71,7 +60,7 @@ export const columns: ColumnDef<Palete>[] = [
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <DeleteDocumentoDialog documentoId={row.original.id} onDelete={() => setDropdownOpen(false)} />
+                            <DeletePaleteDialog paleteId={row.original.id} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

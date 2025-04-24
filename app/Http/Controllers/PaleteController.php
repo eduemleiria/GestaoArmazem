@@ -27,4 +27,10 @@ class PaleteController extends Controller
             'paletes' => $paletes,
         ]);
     }
+
+    public function destroy($id)
+    {
+        $paleteApagar = Palete::where('id', $id)->delete();
+        return redirect()->route('paletes.index')->with('success', 'Palete removida com sucesso!');
+    }
 }
