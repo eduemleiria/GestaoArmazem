@@ -6,8 +6,6 @@ import AppLayout from '@/layouts/app-layout';
 import { Artigo, Cliente, Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import axios from 'axios';
-import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -33,7 +31,6 @@ const formSchema = z.object({
         z.object({
             idArtigo: z.string({ required_error: 'Selecione um artigo!' }),
             quantidade: z.string().min(1, 'A quantidade deve ser pelo menos 1!'),
-            localizacao: z.string(),
         }),
     ),
     dataP: z.string().optional(),
@@ -46,7 +43,7 @@ export default function AdicionarDocumento() {
         defaultValues: {
             idCliente: '',
             tipoDoc: '',
-            linhaDocumento: [{ idArtigo: '', quantidade: '', localizacao: '' }],
+            linhaDocumento: [{ idArtigo: '', quantidade: '' }],
             dataP: '',
             horaP: '',
         },
@@ -76,41 +73,6 @@ export default function AdicionarDocumento() {
         }
     };
     const tipoDocAgr = getTipoDoc(tipoDoc);
-
-    useEffect(() => {
-        const tipoDoc = form.getValues('tipoDoc');
-
-        if (tipoDoc === 'Documento de Entrada') {
-            fields.forEach((field, index) => {
-                form.setValue(`linhaDocumento.${index}.localizacao`, '');
-            });
-            return;
-        }
-
-        const observar = form.watch((value, { name }) => {
-            if (!name?.includes('idArtigo')) return;
-
-            const match = name.match(/linhaDocumento\.(\d+)\.idArtigo/);
-            const index = match ? Number(match[1]) : -1;
-            if (index === -1) return;
-
-            if (tipoDoc === 'Documento de Saída') {
-                const artigoId: any = value?.linhaDocumento?.[index]?.idArtigo;
-                axios
-                    .get(`/gestao-documentos/busca-palete-antiga/${artigoId}`)
-                    .then((res) => {
-                        const palete = res.data;
-                        const localizacao = palete?.localizacao ?? '';
-                        form.setValue(`linhaDocumento.${index}.localizacao`, localizacao);
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                    });
-            }
-        });
-
-        return () => observar.unsubscribe();
-    }, [artigos, form, fields]);
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         router.post('/adicionar-doc', values, {
@@ -176,8 +138,8 @@ export default function AdicionarDocumento() {
                         <p className="pb-3 font-bold">Paletes a {tipoDocAgr.doc}</p>
                         {fields.map((field, index) => {
                             return (
-                                <div key={field.id} className="grid-col-3 mb-3 grid grid-flow-col gap-3">
-                                    <div className="col-span-1">
+                                <div key={field.id} className="grid-col-4 mb-3 grid grid-flow-col gap-3">
+                                    <div className="col-span-2 w-75">
                                         <FormField
                                             control={form.control}
                                             name={`linhaDocumento.${index}.idArtigo`}
@@ -199,7 +161,7 @@ export default function AdicionarDocumento() {
                                             )}
                                         />
                                     </div>
-                                    <div className="col-span-1 w-20">
+                                    <div className="col-span-1">
                                         <FormField
                                             control={form.control}
                                             name={`linhaDocumento.${index}.quantidade`}
@@ -214,22 +176,7 @@ export default function AdicionarDocumento() {
                                             )}
                                         />
                                     </div>
-                                    <div className="col-span-1 w-35">
-                                        <FormField
-                                            control={form.control}
-                                            name={`linhaDocumento.${index}.localizacao`}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Localização</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} type="text" readOnly />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="col-span-1 mt-6 ml-2">
+                                    <div className="col-span-1 mt-6">
                                         <Button
                                             onClick={() => {
                                                 remove(index);
@@ -245,7 +192,7 @@ export default function AdicionarDocumento() {
                         <Button
                             className="mt-3 hover:bg-lime-300"
                             onClick={() => {
-                                append({ idArtigo: '', quantidade: '', localizacao: '' });
+                                append({ idArtigo: '', quantidade: '' });
                             }}
                         >
                             Adicionar linha

@@ -31,13 +31,6 @@ class DocumentoController extends Controller
         return response()->json($artigos);
     }
 
-    public function buscaArtigosPaletesMaisAntigas($idArtigo)
-    {
-        $palete = Palete::where('idArtigo', $idArtigo)->orderBy('dataEntrada', 'asc')->orderBy('quantidade', 'asc')->first();
-
-        return response()->json($palete);
-    }
-
     public function index()
     {
         $documentos = Documento::with('cliente:id,nome')->get()->map(function ($documento) {
@@ -82,8 +75,6 @@ class DocumentoController extends Controller
         ]);
 
         foreach ($request->linhaDocumento as $linha) {
-            $totalPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])->sum('quantidade');
-
             if ($request['tipoDoc'] == "Documento de Entrada") {
                 LinhasDocumento::create([
                     'idDocumento' => $documento->id,
@@ -93,20 +84,48 @@ class DocumentoController extends Controller
                     'idUser' => $request->user()->id,
                 ]);
             } else if ($request['tipoDoc'] == "Documento de Saída") {
+                $artigoPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])->get();
+                $totalPaletes = $artigoPaletes->sum('quantidade');
+
                 if ($linha['quantidade'] > $totalPaletes) {
                     $ultimoDoc = Documento::orderBy('id', 'desc')->first();
                     LinhasDocumento::where('idDocumento', $ultimoDoc->id)->delete();
                     Documento::where('id', $ultimoDoc->id)->delete();
 
                     return redirect()->route('documento.index')->with('error', 'Não existem paletes suficientes!');
-                } else {
-                    LinhasDocumento::create([
-                        'idDocumento' => $documento->id,
-                        'idArtigo' => $linha['idArtigo'],
-                        'quantidade' => $linha['quantidade'],
-                        'localizacao' => $linha['localizacao'] ?? null,
-                        'idUser' => $request->user()->id,
-                    ]);
+                }
+
+                $paleteSair = Palete::where('idArtigo', $linha['idArtigo'])->orderBy('quantidade', 'asc')->orderBy('dataEntrada', 'asc')->get();
+
+                $quantidadeFinal = 0;
+                $quantidades = [(int)$linha['quantidade']];
+
+                for ($i = 0; $quantidadeFinal < $linha['quantidade']; $i++) {
+                    
+                    $quantidadeIterada = (int)$quantidades[$i] - (int)$paleteSair[$i]->quantidade;
+                    $quantidades[] = (int)$quantidadeIterada;
+
+                    if ($quantidades[$i + 1] >= 0) {
+                        LinhasDocumento::create([
+                            'idDocumento' => $documento->id,
+                            'idArtigo' => $linha['idArtigo'],
+                            'quantidade' => $paleteSair[$i]->quantidade,
+                            'localizacao' => $paleteSair[$i]->localizacao,
+                            'idUser' => $request->user()->id,
+                        ]);
+                        $quantidadeFinal += $paleteSair[$i]->quantidade;
+                    } else {
+                        $quantidadeCerta = $paleteSair[$i]->quantidade + $quantidades[$i + 1];
+
+                        LinhasDocumento::create([
+                            'idDocumento' => $documento->id,
+                            'idArtigo' => $linha['idArtigo'],
+                            'quantidade' => $quantidadeCerta,
+                            'localizacao' => $paleteSair[$i]->localizacao,
+                            'idUser' => $request->user()->id,
+                        ]);
+                        $quantidadeFinal += $quantidadeCerta;
+                    }
                 }
             }
         }
