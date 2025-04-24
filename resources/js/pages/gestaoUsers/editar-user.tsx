@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { User } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -21,7 +22,7 @@ const formSchema = z.object({
     idRole: z.string(),
 });
 
-export default function EditarUser({ user }: any) {
+export default function EditarUser({ user }: { user: User }) {
     const { roles } = usePage<{ roles: Role[] }>().props;
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -34,7 +35,7 @@ export default function EditarUser({ user }: any) {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        router.patch(route('editar-user.update', user.id), values, {
+        router.patch(route('editar-user.update', user?.id), values, {
             onSuccess: () => {},
             onError: (errors) => {
                 console.error(errors);

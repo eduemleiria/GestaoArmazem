@@ -49,17 +49,17 @@ export const columns: ColumnDef<Documento>[] = [
     {
         id: 'actions',
         header: () => 'Ações',
-        cell: ({ row }) => {
+        cell: function Cell({row}) {
             const [dropdownOpen, setDropdownOpen] = useState(false);
 
-            const getEstado = (estado: any): any => {
+            const getEstado = (estado: string) => {
                 switch (estado) {
                     case 'Pendente':
                         return { editable: false };
                     case 'Concluído':
                         return { editable: true };
                     default:
-                        return { editable: '' };
+                        return { editable: false };
                 }
             };
             const estadoAgr = getEstado(row.original.estado);

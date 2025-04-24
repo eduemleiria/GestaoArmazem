@@ -27,7 +27,7 @@ export const columns: ColumnDef<User>[] = [
         accessorKey: 'created_at',
         header: () => 'Juntou-se dia',
         cell: ({ row }) => {
-            const dia: any = row.getValue('created_at');
+            const dia: Date = row.getValue('created_at');
 
             const formatted = new Intl.DateTimeFormat('en-GB', {
                 dateStyle: 'short',

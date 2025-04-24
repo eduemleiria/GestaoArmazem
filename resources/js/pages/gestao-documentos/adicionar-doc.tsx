@@ -3,7 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useArtigos } from '@/hooks/use-artigos';
 import AppLayout from '@/layouts/app-layout';
-import { Artigo, Cliente, Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
+import { Artigo, Cliente, type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -17,13 +17,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // Desta linha há 39, é os types e regras do formulários
-type Props = {
-    documento: Documento;
-    linhasDocumento: LinhaDocumento[];
-    cliente: Cliente;
-    artigo: Artigo;
-};
-
 const formSchema = z.object({
     tipoDoc: z.string({ required_error: 'É necessário inserir uma opção!' }),
     idCliente: z.string({ required_error: 'É necessário inserir uma opção!' }),
@@ -62,7 +55,7 @@ export default function AdicionarDocumento() {
     const idCliente = form.watch('idCliente');
     const artigos = useArtigos(tipoDoc, idCliente);
 
-    const getTipoDoc = (tipoDoc: string): any => {
+    const getTipoDoc = (tipoDoc: string) => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
                 return { doc: 'Entrar', data: 'Chegada' };
@@ -169,7 +162,7 @@ export default function AdicionarDocumento() {
                                                 <FormItem>
                                                     <FormLabel>Quantidade</FormLabel>
                                                     <FormControl>
-                                                        <Input {...form.register(`linhaDocumento.${index}.quantidade`)} type="number" />
+                                                        <Input {...field} type="number" />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

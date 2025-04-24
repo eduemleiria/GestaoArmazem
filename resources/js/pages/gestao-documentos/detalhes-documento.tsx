@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { CheckIcon, Clock10Icon } from 'lucide-react';
+import { CheckIcon, Clock10Icon, Loader } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -16,27 +16,27 @@ type Props = {
 };
 
 export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
-    const getEstadoInfo = (estado: string): any => {
+    const getEstadoInfo = (estado: string) => {
         switch (estado) {
             case 'Pendente':
                 return { cor: 'bg-yellow-300', icon: <Clock10Icon className="w-5 pr-1"/>};
             case 'Concluído':
                 return { cor: 'bg-lime-400', icon: <CheckIcon className="w-5 pr-1"/>};
             default:
-                return '';
+                return { cor: 'bg-gray-400', icon: <Loader className="w-5 pr-1"/>};
         }
     };
 
     const estadoInfo = getEstadoInfo(documento.estado);
 
-    const getTipoDoc = (tipoDoc: string): any => {
+    const getTipoDoc = (tipoDoc: string) => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
                 return { tipo: "entrar", tipoData: "Chegada" };
             case 'Documento de Saída':
                 return { tipo: "sair", tipoData: "Saida" };
             default:
-                return '';
+                return { tipo: "(Tipo de documento não econtrado)", tipoData: "(Tipo de documento não econtrado)" };
         }
     }
 
@@ -75,7 +75,7 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
                                 <th>Quantidade</th>
                                 <th>Localização</th>
                             </tr>
-                            {linhasDocumento.map((linha: any) => (
+                            {linhasDocumento.map((linha: LinhaDocumento) => (
                                 <tr key={linha.id} className="border text-center">
                                     <td>{linha.idArtigo}</td>
                                     <td>{linha.quantidade}</td>

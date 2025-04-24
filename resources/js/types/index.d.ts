@@ -41,6 +41,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
+    idRole: number[];
 }
 
 export type Documento = {
@@ -56,10 +57,11 @@ export type Documento = {
 };
 
 export type LinhaDocumento = {
-    id: string;
-    idArtigo: string;
+    id: number;
+    idArtigo: string | number;
     quantidade: number;
     localizacao: string;
+    confirmado: string;
 };
 
 export type Role = {

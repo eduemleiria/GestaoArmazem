@@ -35,7 +35,7 @@ export const columns: ColumnDef<Palete>[] = [
     {
         id: 'actions',
         header: () => 'Ações',
-        cell: ({ row }) => {
+        cell: function Cell({row}) {
             const [dropdownOpen, setDropdownOpen] = useState(false);
 
             return (

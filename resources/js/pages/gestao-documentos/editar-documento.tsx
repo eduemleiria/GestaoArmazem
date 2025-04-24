@@ -30,7 +30,7 @@ const formSchema = z.object({
             idArtigo: z.union([z.string(), z.number()]).refine((val) => Number(val) > 0, {
                 message: 'Selecione um artigo válido!',
             }),
-            quantidade: z.string().min(1, 'A quantidade deve ser pelo menos 1!'),
+            quantidade: z.number().int(),
             localizacao: z.string(),
             confirmado: z.string(),
         }),
@@ -46,8 +46,8 @@ type Props = {
 
 export default function EditarDocumento({ documento, linhasDocumento }: Props) {
     // Isto inicializa a informação recebida do backend
-    const { userLogadoRole }: any = usePage<{ userLogadoRole: Role[] }>().props;
-    const { clientes }: any = usePage<{ clientes: Cliente[] }>().props;
+    const { userLogadoRole } = usePage<{ userLogadoRole: string }>().props;
+    const { clientes } = usePage<{ clientes: Cliente[] }>().props;
     const [artigos, setArtigos] = useState<Artigo[]>([]);
 
     // Isto cria a estrutura do formulário com os correspondentes valores
@@ -56,10 +56,10 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
         defaultValues: {
             tipoDoc: documento?.tipoDoc || '',
             idCliente: documento?.idCliente || '',
-            linhaDocumento: linhasDocumento.map((linha: any) => ({
-                id: linha.id || '',
+            linhaDocumento: linhasDocumento.map((linha: LinhaDocumento) => ({
+                id: linha.id || 0,
                 idArtigo: linha.idArtigo || '',
-                quantidade: linha.quantidade?.toString() || '0',
+                quantidade: linha.quantidade || 0,
                 localizacao: linha.localizacao?.toString() || '',
                 confirmado: linha.confirmado?.toString() || 'Confirmar',
             })),
@@ -69,20 +69,20 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
     });
 
     // Recebe o tipo de documento e muda consoante o seu valor (focado em estética)
-    const getTipoDocTexto = (tipoDoc: string): string => {
+    const getTipoDocTexto = (tipoDoc: string) => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
                 return 'Chegada';
             case 'Documento de Saída':
                 return 'Saída';
             default:
-                return '';
+                return '(Selecione um tipo de documento)';
         }
     };
 
     const [showText, setShowText] = useState(getTipoDocTexto(documento?.tipoDoc));
 
-    const handletext = (e: any) => {
+    const handletext = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setShowText(getTipoDocTexto(e.target.value));
     };
 
@@ -114,9 +114,9 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
         const values = form.getValues();
         const originais: Record<number, number> = {};
 
-        values.linhaDocumento?.forEach((item: any, idx: number) => {
+        values.linhaDocumento?.forEach((item: LinhaDocumento, idx: number) => {
             if (item?.quantidade != null) {
-                originais[idx] = parseInt(item.quantidade);
+                originais[idx] = item.quantidade;
             }
         });
 
@@ -128,9 +128,9 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
         const linha = values.linhaDocumento[index];
 
         const original = quantidadeOriginal[index];
-        const confirmado: any = parseInt(linha.quantidade);
+        const linhaConfirmada = linha.quantidade;
 
-        const resto = original - confirmado;
+        const resto = original - linhaConfirmada;
 
         setConfirmado((prev) => ({
             ...prev,
@@ -144,6 +144,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                 idArtigo: linha.idArtigo,
                 quantidade: resto,
                 localizacao: '',
+                confirmado: '',
             });
 
             setQuantidadeOriginal((prev) => ({
@@ -160,12 +161,12 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
         window.location.reload();
     };
 
-    const getUserLogadoRole = (role: string): any => {
+    const getUserLogadoRole = (role: string) => {
         switch (role) {
             case 'gerente':
                 return {
                     cor: 'bg-gray-100',
-                    editable: 'true',
+                    editable: true,
                     buttonSave: <SaveDocumentoDialog documentoId={documento.id} values={form.getValues()} />,
                     btnExtraLinha: (index: number) => (
                         <div>
@@ -189,7 +190,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
             default:
                 return {
                     cor: '',
-                    editable: '',
+                    editable: false,
                     buttonSave: (
                         <Button type="submit" className="flex w-46 hover:bg-green-500">
                             Guardar
@@ -210,7 +211,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                         <Button
                             className="w-46 hover:bg-green-500"
                             onClick={() => {
-                                append({ id: 0, idArtigo: '', quantidade: '', localizacao: '', confirmado: '' });
+                                append({ id: 0, idArtigo: '', quantidade: 0, localizacao: '', confirmado: '' });
                             }}
                         >
                             Adicionar linha
@@ -287,7 +288,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                         <p className="font-bold">Paletes a entrar</p>
                         {userRole.btnResetEdit}
                     </div>
-                    {fields.map((field: any, index: number) => (
+                    {fields.map((field, index: number) => (
                         <div key={field.id || index} className="grid-col-3 mb-3 grid grid-flow-col gap-3">
                             <div className="col-span-1">
                                 <FormField

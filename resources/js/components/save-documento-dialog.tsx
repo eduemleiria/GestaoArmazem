@@ -14,7 +14,7 @@ import { Documento } from '@/types';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function SaveDocumentoButton({ documentoId, onSave, values }: { documentoId: string; onSave?: () => void; values: any }) {
+export default function SaveDocumentoButton({ documentoId, onSave, values }: { documentoId: number; onSave?: () => void; values: any }) {
     const [open, setOpen] = useState(false);
 
     const handleSave = () => {
