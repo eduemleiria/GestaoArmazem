@@ -11,9 +11,11 @@ class DashboardController extends Controller
 {
     public function dashboard(){
         $numDocsEntHj = count(Documento::where('tipoDoc', 'Documento de Entrada')->whereDate('data', date("Y-m-d"))->get());
+        $numDocsSaidaHj = count(Documento::where('tipoDoc', 'Documento de Saída')->whereDate('data', date("Y-m-d"))->get());
 
         return Inertia::render('dashboard', [
-            'numDocsEntHj' => $numDocsEntHj
+            'numDocsEntHj' => $numDocsEntHj,
+            'numDocsSaidaHj' => $numDocsSaidaHj
         ]);
     }
 }

@@ -3,8 +3,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/comp
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { HandshakeIcon, LucideTruck, Package, PackageMinus, PackagePlus, TrendingUpIcon, TruckIcon } from 'lucide-react';
-import { any } from 'zod';
+import { PackageMinus, PackagePlus, TrendingUpIcon } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -13,13 +12,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface PageProps {
+interface Props {
     numDocsEntHj: number;
+    numDocsSaidaHj: number;
 }
 
-export default function Dashboard() {
-    const { numDocsEntHj } = usePage<PageProps>().props;
-
+export default function Dashboard({ numDocsEntHj, numDocsSaidaHj }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -35,11 +33,11 @@ export default function Dashboard() {
                     </Card>
                 </div>
                 <div className="w-100 p-4">
-                <Card className="@container/card items-center">
+                    <Card className="@container/card items-center">
                         <PackageMinus className="size-11" />
                         <CardHeader className="items-center justify-center">
                             <CardDescription>Documentos de Saída | Hoje</CardDescription>
-                            <CardTitle className="text-2xl font-semibold">2</CardTitle>
+                            <CardTitle className="text-2xl font-semibold">{numDocsSaidaHj}</CardTitle>
                         </CardHeader>
                     </Card>
                 </div>

@@ -12,7 +12,7 @@ export default function NavBar() {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=Alexandria:400,500,600" rel="stylesheet" />
             </Head>
-            <div className={`sticky top-0 z-50 flex items-center justify-between rounded-b-lg bg-white p-4`}>
+            <div className={`sticky top-0 z-50 flex items-center justify-between p-4 dark:text-white bg-white/30 backdrop-blur-lg`}>
                 <Link href={route('home')} className={`text-xl font-bold text-black`}>
                     QuickShelf
                 </Link>
@@ -54,7 +54,7 @@ export default function NavBar() {
                         <>
                             <Link
                                 href={route('login')}
-                                className="inline-block rounded-sm border border-transparent bg-lime-100 px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] hover:bg-lime-400 dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                className="inline-block rounded-sm border border-transparent bg-green-200 px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] hover:bg-lime-400 dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                             >
                                 Log in
                             </Link>

@@ -10,7 +10,7 @@ export function useArtigos(tipoDoc: string, idCliente: string) {
             return;
         }
 
-        var route: string = '';
+        let route: string = '';
 
         if(tipoDoc == "Documento de Saída"){
             route = `/gestao-documentos/busca-artigos-com-paletes/${idCliente}`;
