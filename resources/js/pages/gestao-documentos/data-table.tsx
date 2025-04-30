@@ -1,8 +1,10 @@
-import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import * as React from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -10,15 +12,33 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+    const [globalFilter, setGlobalFilter] = React.useState<any>([]);
+
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onColumnFiltersChange: setGlobalFilter,
+        getFilteredRowModel: getFilteredRowModel(),
+        state: {
+            globalFilter,
+        },
     });
 
     return (
         <div>
+            <div className="flex items-center py-4">
+                <Input
+                    placeholder="Insira o valor que procura..."
+                    value={globalFilter ?? ''}
+                    onChange={(e) => {
+                        setGlobalFilter(e.target.value);
+                        table.setGlobalFilter(String(e.target.value));
+                    }}
+                    className="max-w-sm"
+                />
+            </div>
             <div className="rounded-md border">
                 <Table className="text-center">
                     <TableHeader>
