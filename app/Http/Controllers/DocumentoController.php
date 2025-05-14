@@ -11,6 +11,7 @@ use App\Models\Palete;
 use Inertia\Inertia;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DocumentoController extends Controller
 {
@@ -95,38 +96,8 @@ class DocumentoController extends Controller
                     return redirect()->route('documento.index')->with('error', 'Não existem paletes suficientes!');
                 }
 
-                $paleteSair = Palete::where('idArtigo', $linha['idArtigo'])->orderBy('quantidade', 'asc')->orderBy('dataEntrada', 'asc')->get();
-
-                $quantidadeFinal = 0;
-                $quantidades = [(int)$linha['quantidade']];
-
-                for ($i = 0; $quantidadeFinal < $linha['quantidade']; $i++) {
-                    
-                    $quantidadeIterada = (int)$quantidades[$i] - (int)$paleteSair[$i]->quantidade;
-                    $quantidades[] = (int)$quantidadeIterada;
-
-                    if ($quantidades[$i + 1] >= 0) {
-                        LinhasDocumento::create([
-                            'idDocumento' => $documento->id,
-                            'idArtigo' => $linha['idArtigo'],
-                            'quantidade' => $paleteSair[$i]->quantidade,
-                            'localizacao' => $paleteSair[$i]->localizacao,
-                            'idUser' => $request->user()->id,
-                        ]);
-                        $quantidadeFinal += $paleteSair[$i]->quantidade;
-                    } else {
-                        $quantidadeCerta = $paleteSair[$i]->quantidade + $quantidades[$i + 1];
-
-                        LinhasDocumento::create([
-                            'idDocumento' => $documento->id,
-                            'idArtigo' => $linha['idArtigo'],
-                            'quantidade' => $quantidadeCerta,
-                            'localizacao' => $paleteSair[$i]->localizacao,
-                            'idUser' => $request->user()->id,
-                        ]);
-                        $quantidadeFinal += $quantidadeCerta;
-                    }
-                }
+                $linhaDocumentoController = app(LinhaDocumentoController::class);
+                $linhaDocumentoController->store($request, $documento, $linha);
             }
         }
 
@@ -207,6 +178,8 @@ class DocumentoController extends Controller
 
         $documento = Documento::find($id);
 
+        $contaLinhas = count($request->linhaDocumento);
+        
         $data = $request["dataP"];
         $hora = $request["horaP"];
 
@@ -218,27 +191,98 @@ class DocumentoController extends Controller
             return redirect()->route('documento.index')->with('error', 'O documento encontra-se concluído!');
         } else {
             if ($userLogadoRole == "admin") {
-                $documento->update([
-                    'tipoDoc' => $request->input('tipoDoc'),
-                    'idCliente' => $request->input('idCliente'),
-                    'data' => $datahora->format('Y-m-d H:i:s'),
-                    'idUser' => $request->user()->id,
-                ]);
-
-                foreach ($request->linhaDocumento as $linha) {
-                    linhasDocumento::where('id', $linha['id'])->update([
-                        'idArtigo' => $linha['idArtigo'],
-                        'quantidade' => $linha['quantidade'],
-                        'localizacao' => $linha['localizacao'],
+                if ($request->input('tipoDoc') == "Documento de Entrada") {
+                    $documento->update([
+                        'tipoDoc' => $request->input('tipoDoc'),
+                        'idCliente' => $request->input('idCliente'),
+                        'data' => $datahora->format('Y-m-d H:i:s'),
                         'idUser' => $request->user()->id,
                     ]);
-                }
 
-                return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
+                    foreach ($request->linhaDocumento as $linha) {
+                        linhasDocumento::where('id', $linha['id'])->update([
+                            'idArtigo' => $linha['idArtigo'],
+                            'quantidade' => $linha['quantidade'],
+                            'localizacao' => $linha['localizacao'],
+                            'idUser' => $request->user()->id,
+                        ]);
+                    }
+
+                    return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
+                } else if ($request->input('tipoDoc') == "Documento de Saída") {
+                    $documento->update([
+                        'tipoDoc' => $request->input('tipoDoc'),
+                        'idCliente' => $request->input('idCliente'),
+                        'data' => $datahora->format('Y-m-d H:i:s'),
+                        'idUser' => $request->user()->id,
+                    ]);
+
+                    $linhasDoc = linhasDocumento::where('idDocumento', $documento->id)->get();
+                    $numLinhasOrg = $linhasDoc->count();
+                    $linhasReq = $request->linhaDocumento;
+                    $numLinhasReq = count($linhasReq);
+                    $idLinhasOrg = array();
+                    $idLinhasReq = array();
+
+                    for ($i = 0; $i < $numLinhasOrg; $i++) {
+                        if (array_key_exists($linhasDoc[$i]->id, $idLinhasOrg)) {
+                            $idLinhasOrg[$i] += (int)$linhasDoc[$i]->id;
+                        } else {
+                            $idLinhasOrg[$i] = (int)$linhasDoc[$i]->id;
+                        }
+                    }
+
+                    foreach ($request->linhaDocumento as $linha) {
+                        $idLinhasReq[] = (int)$linha['id'];
+                    }
+
+                    $diff = array_diff($idLinhasOrg, $idLinhasReq);
+
+                    foreach ($diff as $key => $value) {
+                        linhasDocumento::where('id', $value)->delete();
+                    }
+
+                    $qntPedidaTotal = array();
+
+                    foreach ($request->linhaDocumento as $linha) {
+                        $artigoPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])->get();
+                        $totalPaletes = $artigoPaletes->sum('quantidade');
+
+                        if ($totalPaletes < $linha['quantidade']) {
+                            return redirect()->route('documento.index')->with('error', 'Não existem paletes suficientes!');
+                        } else {
+                            if (array_key_exists($linha['idArtigo'], $qntPedidaTotal)) {
+                                $qntPedidaTotal[$linha['idArtigo']] += $linha['quantidade'];
+                            } else {
+                                $qntPedidaTotal[$linha['idArtigo']] = (int)$linha['quantidade'];
+                            }
+                        }
+                    }
+
+                    foreach ($request->linhaDocumento as $linha) {
+                        $artigoPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])->get();
+                        $totalPaletes = $artigoPaletes->sum('quantidade');
+
+                        if ($qntPedidaTotal[$linha['idArtigo']] > $totalPaletes) {
+                            return redirect()->route('documento.index')->with('error', 'Não existem paletes suficientes!');
+                        } else {
+                            if (linhasDocumento::where('id', $linha['id'])->exists()) {
+                                linhasDocumento::where('id', $linha['id'])->update([
+                                    'idArtigo' => $linha['idArtigo'],
+                                    'quantidade' => $linha['quantidade'],
+                                    'localizacao' => $linha['localizacao'],
+                                    'idUser' => $request->user()->id,
+                                ]);
+                            } else {
+                                $linhaDocumentoController = app(LinhaDocumentoController::class);
+                                $linhaDocumentoController->update($request, $documento, $linha);
+                            }
+                        }
+                    }
+                    return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
+                }
             } else if ($userLogadoRole == "gerente") {
                 $documento = Documento::find($id);
-
-                $contaLinhas = count($request->linhaDocumento);
 
                 foreach ($request->linhaDocumento as $linha) {
                     for ($i = 0; $i <= $contaLinhas - 1; $i++) {

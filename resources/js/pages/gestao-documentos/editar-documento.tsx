@@ -30,7 +30,9 @@ const formSchema = z.object({
             idArtigo: z.union([z.string(), z.number()]).refine((val) => Number(val) > 0, {
                 message: 'Selecione um artigo válido!',
             }),
-            quantidade: z.number().int(),
+            quantidade: z.union([z.string(), z.number()]).refine((val) => Number(val) > 0, {
+                message: 'Selecione um artigo válido!',
+            }),
             localizacao: z.string(),
             confirmado: z.string(),
         }),
@@ -325,7 +327,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                                         <FormItem>
                                             <FormLabel>Quantidade</FormLabel>
                                             <FormControl>
-                                                <Input {...field} disabled={desativado(index)} type="number" />
+                                                <Input {...field} disabled={desativado(index)} type="number" onWheel={(e) => e.target.blur()} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
