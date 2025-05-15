@@ -12,7 +12,15 @@ class LinhaDocumentoController extends Controller
 {
     public function store($request, $documento, $linha)
     {
-        $paleteSair = Palete::where('idArtigo', $linha['idArtigo'])->orderBy('quantidade', 'asc')->orderBy('dataEntrada', 'asc')->get();
+        $localizacoesEmUso = linhasDocumento::where('idArtigo', $linha['idArtigo'])
+            ->where('idDocumento', $documento->id)
+            ->pluck('localizacao');
+
+        $paleteSair = Palete::where('idArtigo', $linha['idArtigo'])
+            ->whereNotIn('localizacao', $localizacoesEmUso)
+            ->orderBy('quantidade', 'asc')
+            ->orderBy('dataEntrada', 'asc')
+            ->get();
 
         $quantidadeFinal = 0;
         $quantidades = [(int)$linha['quantidade']];
@@ -78,10 +86,10 @@ class LinhaDocumentoController extends Controller
                 ->first();
 
             if ($linhasDocDifPaleteQuant->isEmpty()) {
-                //Não, a palete e a linha têm a mesma quantidade;
-                $resultado1 = $linhasDocDiffPalete->quantidade - $linha['quantidade'];
+                //A palete e a linha têm a mesma quantidade;
+                $restoDepoisPedido = $linhasDocDiffPalete->quantidade - $linha['quantidade'];
 
-                if ($resultado1 >= 0) {
+                if ($restoDepoisPedido >= 0) {
                     linhasDocumento::create([
                         'idDocumento' => $documento->id,
                         'idArtigo' => $linha['idArtigo'],
@@ -90,10 +98,10 @@ class LinhaDocumentoController extends Controller
                         'idUser' => $request->user()->id,
                     ]);
                 } else {
-                    dd("Erro:", $resultado1 . " = " . $linhasDocDiffPalete->quantidade . " - " . $linha['quantidade']);
+                    $this->store($request, $documento, $linha);
                 }
             } else {
-                //Sim, há uma linha no documento com quantidade inferior há palete que está a usar;
+                //Há uma linha no documento com quantidade inferior há palete que está a usar;
                 $quantidades = [(int)$linha['quantidade']];
 
                 for ($i = 0; $i < count($linhasDocDifPaleteQuant); $i++) {

@@ -219,8 +219,6 @@ class DocumentoController extends Controller
 
                     $linhasDoc = linhasDocumento::where('idDocumento', $documento->id)->get();
                     $numLinhasOrg = $linhasDoc->count();
-                    $linhasReq = $request->linhaDocumento;
-                    $numLinhasReq = count($linhasReq);
                     $idLinhasOrg = array();
                     $idLinhasReq = array();
 
