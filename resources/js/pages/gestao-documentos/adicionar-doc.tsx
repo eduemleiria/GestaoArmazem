@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Artigo, Cliente, type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -28,6 +29,9 @@ const formSchema = z.object({
     ),
     dataP: z.string().optional(),
     horaP: z.string().optional(),
+    moradaC: z.string().optional(),
+    moradaD: z.string().optional(),
+    matricula: z.string().optional(),
 });
 
 export default function AdicionarDocumento() {
@@ -39,6 +43,9 @@ export default function AdicionarDocumento() {
             linhaDocumento: [{ idArtigo: '', quantidade: '' }],
             dataP: '',
             horaP: '',
+            moradaC: '',
+            moradaD: '',
+            matricula: '',
         },
     });
 
@@ -55,14 +62,73 @@ export default function AdicionarDocumento() {
     const idCliente = form.watch('idCliente');
     const artigos = useArtigos(tipoDoc, idCliente);
 
+    function inserirMorada(e) {
+        const index = e.target.selectedIndex;
+
+        const clienteIndex = index - 1;
+
+        if (clienteIndex >= 0) {
+            const selectedCliente = clientes[clienteIndex];
+            form.setValue('moradaC', selectedCliente.morada);
+        } else {
+            form.setValue('moradaC', '');
+        }
+    }
+
     const getTipoDoc = (tipoDoc: string) => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
-                return { doc: 'Entrar', data: 'Chegada' };
+                return { doc: 'Entrar', data: 'Chegada', camposGuiaT: '' };
             case 'Documento de Saída':
-                return { doc: 'Saír', data: 'Saída' };
+                return {
+                    doc: 'Saír',
+                    data: 'Saída',
+                    camposGuiaT: (
+                        <div className="grid gap-4 pb-4">
+                            <FormField
+                                control={form.control}
+                                name="moradaC"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Morada do Cliente</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="text" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="moradaD"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Morada de Destino</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="text" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="matricula"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Matrícula</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="text" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    ),
+                };
             default:
-                return { doc: '(Escolha um tipo de documento)', data: '(Escolha um tipo de documento)' };
+                return { doc: '(Escolha um tipo de documento)', data: '(Escolha um tipo de documento)', camposGuiaT: '' };
         }
     };
     const tipoDocAgr = getTipoDoc(tipoDoc);
@@ -114,7 +180,14 @@ export default function AdicionarDocumento() {
                             <FormItem className="pb-6">
                                 <FormLabel>Cliente</FormLabel>
                                 <FormControl>
-                                    <select {...field} className="w-full rounded-md border p-2">
+                                    <select
+                                        {...field}
+                                        className="w-full rounded-md border p-2"
+                                        onChange={(e) => {
+                                            field.onChange(e);
+                                            inserirMorada(e);
+                                        }}
+                                    >
                                         <option>Selecione um cliente...</option>
                                         {clientes.map((cliente) => (
                                             <option key={cliente.id} value={cliente.id}>
@@ -127,6 +200,7 @@ export default function AdicionarDocumento() {
                             </FormItem>
                         )}
                     />
+                    {tipoDocAgr.camposGuiaT}
                     <div>
                         <p className="pb-3 font-bold">Paletes a {tipoDocAgr.doc}</p>
                         {fields.map((field, index) => {
@@ -162,7 +236,7 @@ export default function AdicionarDocumento() {
                                                 <FormItem>
                                                     <FormLabel>Quantidade</FormLabel>
                                                     <FormControl>
-                                                        <Input {...field} type="number"  onWheel={(e) => e.target.blur()} />
+                                                        <Input {...field} type="number" onWheel={(e) => e.target.blur()} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

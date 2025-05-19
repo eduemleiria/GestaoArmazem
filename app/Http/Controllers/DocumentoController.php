@@ -51,7 +51,7 @@ class DocumentoController extends Controller
 
     public function create()
     {
-        $clientes = Cliente::select('id', 'nome')->get();
+        $clientes = Cliente::select('id', 'nome', 'morada')->get();
 
         return Inertia::render('gestao-documentos/adicionar-doc', [
             'clientes' => $clientes
@@ -72,6 +72,9 @@ class DocumentoController extends Controller
             'idCliente' => $request['idCliente'],
             'data' => $datahora->format('Y-m-d H:i:s'),
             'estado' => "Pendente",
+            'moradaC' => $request['moradaC'] ?? null,
+            'moradaD' => $request['moradaD'] ?? null,
+            'matricula' => $request['matricula'] ?? null,
             'idUser' => $request->user()->id,
         ]);
 
