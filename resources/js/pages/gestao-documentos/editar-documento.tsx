@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { Artigo, Cliente, Documento, LinhaDocumento, Role, type BreadcrumbItem } from '@/types';
+import { Artigo, Cliente, Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
@@ -111,6 +111,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
     // Lógica de adicionar linha consuante o resto e a quantidade original
     const [confirmado, setConfirmado] = useState<Record<number, string>>({});
     const [quantidadeOriginal, setQuantidadeOriginal] = useState<Record<number, number>>({});
+    const [idLinha, setIdLinha] = useState<number[]>([]);
 
     useEffect(() => {
         const values = form.getValues();
@@ -121,18 +122,28 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                 originais[idx] = item.quantidade;
             }
         });
-
         setQuantidadeOriginal(originais);
     }, []);
+
+    function proximoId() {
+        const allIds = form.getValues().linhaDocumento.map((linha: LinhaDocumento) => linha.id);
+        const maxId = Math.max(...allIds, ...idLinha);
+        return maxId + 1;
+    }
 
     const confirmaHandler = (index: number) => {
         const values = form.getValues();
         const linha = values.linhaDocumento[index];
-
         const original = quantidadeOriginal[index];
         const linhaConfirmada = linha.quantidade;
-
         const resto = original - linhaConfirmada;
+
+        setIdLinha((prev) => {
+            if (!prev.includes(linha.id)) {
+                return [...prev, linha.id];
+            }
+            return prev;
+        });
 
         setConfirmado((prev) => ({
             ...prev,
@@ -141,8 +152,10 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
         form.setValue(`linhaDocumento.${index}.confirmado`, 'Confirmado');
 
         if (!confirmado[index] && resto > 0) {
+            const newId = proximoId();
+
             append({
-                id: linha.id + 1,
+                id: newId,
                 idArtigo: linha.idArtigo,
                 quantidade: resto,
                 localizacao: '',

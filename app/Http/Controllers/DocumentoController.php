@@ -179,7 +179,7 @@ class DocumentoController extends Controller
         $documento = Documento::find($id);
 
         $contaLinhas = count($request->linhaDocumento);
-        
+
         $data = $request["dataP"];
         $hora = $request["horaP"];
 
@@ -282,56 +282,54 @@ class DocumentoController extends Controller
             } else if ($userLogadoRole == "gerente") {
                 $documento = Documento::find($id);
 
-                foreach ($request->linhaDocumento as $linha) {
-                    for ($i = 0; $i <= $contaLinhas - 1; $i++) {
-                        if ($contaLinhas <= 1) {
-                            break;
+                if ($documento->tipoDoc == "Documento de Entrada") {
+                    foreach ($request->linhaDocumento as $linha) {
+                        for ($i = 0; $i <= $contaLinhas - 1; $i++) {
+                            if ($contaLinhas <= 1) {
+                                break;
+                            }
+
+                            if ($request->linhaDocumento[$i]['localizacao'] == $request->linhaDocumento[$i + 1]['localizacao']) {
+                                return redirect()->route('documento.index')->with('error', 'A mesma localização não pode ser inserida mais que 1 vez!');
+                            } else {
+                                break;
+                            }
                         }
 
-                        if ($request->linhaDocumento[$i]['localizacao'] == $request->linhaDocumento[$i + 1]['localizacao']) {
-                            return redirect()->route('documento.index')->with('error', 'A mesma localização não pode ser inserida mais que 1 vez!');
+                        if (!Palete::where('localizacao', '=', $linha['localizacao'])->first()) {
+                            // Serve de forma a reutilizar as linhas quando o gerente está a dividir
+                            // quantidades de paletes por localização
+                            if (linhasDocumento::where('id', $linha['id'])->first()) {
+                                linhasDocumento::where('id', $linha['id'])->update([
+                                    'idArtigo' => $linha['idArtigo'],
+                                    'quantidade' => $linha['quantidade'],
+                                    'localizacao' => $linha['localizacao'],
+                                    'idUser' => $request->user()->id,
+                                ]);
+                            } else {
+                                linhasDocumento::create([
+                                    'idDocumento' => $request['id'],
+                                    'idArtigo' => $linha['idArtigo'],
+                                    'quantidade' => $linha['quantidade'],
+                                    'localizacao' => $linha['localizacao'],
+                                    'idUser' => $request->user()->id,
+                                ]);
+                            }
                         } else {
-                            break;
+                            return redirect()->route('documento.index')->with('error', 'A localização da palete já está ocupada!');
                         }
                     }
 
-                    if (!Palete::where('localizacao', '=', $linha['localizacao'])->first()) {
-                        if (linhasDocumento::where('id', $linha['id'])->first()) {
-                            linhasDocumento::where('id', $linha['id'])->update([
-                                'idArtigo' => $linha['idArtigo'],
-                                'quantidade' => $linha['quantidade'],
-                                'localizacao' => $linha['localizacao'],
-                                'idUser' => $request->user()->id,
-                            ]);
-                        } else {
-                            linhasDocumento::where('id', $linha['id'])->create([
-                                'idDocumento' => $request['id'],
-                                'idArtigo' => $linha['idArtigo'],
-                                'quantidade' => $linha['quantidade'],
-                                'localizacao' => $linha['localizacao'],
-                                'idUser' => $request->user()->id,
-                            ]);
-                        }
+                    $PaleteController = app(PaleteController::class);
+                    $PaleteController->store($request);
 
-
-                        if ($linha['confirmado'] == "Confirmado") {
-                            Palete::create([
-                                'idArtigo' => $linha['idArtigo'],
-                                'quantidade' => $linha['quantidade'],
-                                'localizacao' => $linha['localizacao'],
-                                'dataEntrada' => $datahora->format('Y-m-d H:i:s'),
-                                'idLinhasDE' => $linha['id'],
-                                'idUser' => $request->user()->id,
-                            ]);
-                            $documento->update([
-                                'estado' => 'Concluído',
-                            ]);
-                        }
-                    } else {
-                        return redirect()->route('documento.index')->with('error', 'A localização da palete já está ocupada!');
-                    }
+                    $documento->update([
+                        'estado' => 'Concluído',
+                    ]);
+                } else if ($documento->tipoDoc == "Documento de Saída") {
+                    $PaleteController = app(PaleteController::class);
+                    $PaleteController->store($request);
                 }
-
                 return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
             }
         }
