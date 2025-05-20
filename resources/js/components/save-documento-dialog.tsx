@@ -14,10 +14,12 @@ import { Documento } from '@/types';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function SaveDocumentoButton({ documentoId, onSave, values }: { documentoId: number; onSave?: () => void; values: Documento }) {
+export default function SaveDocumentoButton({ documentoId, onSave, getValues }: { documentoId: number; onSave?: () => void; getValues: () => Documento; }) {
     const [open, setOpen] = useState(false);
 
     const handleSave = () => {
+        const values = getValues();
+
         router.patch(route('editar-documento.update', documentoId), values, {
             onSuccess: () => {
                 onSave?.();

@@ -37,6 +37,9 @@ const formSchema = z.object({
             confirmado: z.string(),
         }),
     ),
+    moradaC: z.string(),
+    moradaD: z.string(),
+    matricula: z.string(),
     dataP: z.string(),
     horaP: z.string(),
 });
@@ -65,6 +68,9 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                 localizacao: linha.localizacao?.toString() || '',
                 confirmado: linha.confirmado?.toString() || 'Confirmar',
             })),
+            moradaC: documento?.moradaC || '',
+            moradaD: documento?.moradaD || '',
+            matricula: documento?.matricula || '',
             dataP: documento?.data || '',
             horaP: documento?.hora || '',
         },
@@ -74,11 +80,56 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
     const getTipoDocTexto = (tipoDoc: string) => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
-                return 'Chegada';
+                return { data: 'Chegada', camposGuiaT: '' };
             case 'Documento de Saída':
-                return 'Saída';
+                return {
+                    data: 'Saída',
+                    camposGuiaT: (
+                        <>
+                            <FormField
+                                control={form.control}
+                                name="moradaC"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Morada do Cliente</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="text" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="moradaD"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Morada do destinatário</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="text" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="matricula"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Matrícula</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="text" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </>
+                    ),
+                };
             default:
-                return '(Selecione um tipo de documento)';
+                return { data: '(Selecione um tipo de documento)', camposGuiaT: '' };
         }
     };
 
@@ -149,6 +200,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
             ...prev,
             [index]: prev[index] === 'Confirmado' ? 'Confirmar' : 'Confirmado',
         }));
+
         form.setValue(`linhaDocumento.${index}.confirmado`, 'Confirmado');
 
         if (!confirmado[index] && resto > 0) {
@@ -182,7 +234,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                 return {
                     cor: 'bg-gray-100',
                     editable: true,
-                    buttonSave: <SaveDocumentoDialog documentoId={documento.id} values={form.getValues()} />,
+                    buttonSave: <SaveDocumentoDialog documentoId={documento.id} getValues={form.getValues} />,
                     btnExtraLinha: (index: number) => (
                         <div>
                             <Button
@@ -299,6 +351,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                             </FormItem>
                         )}
                     />
+                    {showText.camposGuiaT}
                     <div className="flex justify-between">
                         <p className="font-bold">Paletes a entrar</p>
                         {userRole.btnResetEdit}
@@ -371,7 +424,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
 
                     <div className="gap-4 py-3">
                         <p>
-                            Data e hora de <b>{showText}</b> prevista
+                            Data e hora de <b>{showText.data}</b> prevista
                         </p>
                         <div className="flex gap-4">
                             <FormField

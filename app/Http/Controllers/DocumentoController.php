@@ -153,6 +153,9 @@ class DocumentoController extends Controller
             'hora' => $dataChegadaEm2[1],
             'dataSaida' => $documento->dataSaida,
             'idCliente' => $documento->cliente?->id ?? 'Sem Cliente',
+            'moradaC' => $documento->moradaC,
+            'moradaD' => $documento->moradaD,
+            'matricula' => $documento->matricula
         ];
 
         $linhasDocumento = linhasDocumento::where('idDocumento', $id)
@@ -196,15 +199,23 @@ class DocumentoController extends Controller
         if ($documento->estado == 'Concluído') {
             return redirect()->route('documento.index')->with('error', 'O documento encontra-se concluído!');
         } else {
-            if ($userLogadoRole == "admin") {
-                if ($request->input('tipoDoc') == "Documento de Entrada") {
-                    $documento->update([
-                        'tipoDoc' => $request->input('tipoDoc'),
-                        'idCliente' => $request->input('idCliente'),
-                        'data' => $datahora->format('Y-m-d H:i:s'),
-                        'idUser' => $request->user()->id,
-                    ]);
+            $documento->update([
+                'moradaC' => $request->input('moradaC'),
+                'moradaD' => $request->input('moradaD'),
+                'matricula' => $request->input('matricula'),
+                'data' => $datahora->format('Y-m-d H:i:s'),
+                'idUser' => $request->user()->id,
+            ]);
 
+            if ($userLogadoRole == "admin") {
+                $documento->update([
+                    'tipoDoc' => $request->input('tipoDoc'),
+                    'idCliente' => $request->input('idCliente'),
+                    'data' => $datahora->format('Y-m-d H:i:s'),
+                    'idUser' => $request->user()->id,
+                ]);
+
+                if ($request->input('tipoDoc') == "Documento de Entrada") {
                     foreach ($request->linhaDocumento as $linha) {
                         linhasDocumento::where('id', $linha['id'])->update([
                             'idArtigo' => $linha['idArtigo'],
@@ -213,16 +224,8 @@ class DocumentoController extends Controller
                             'idUser' => $request->user()->id,
                         ]);
                     }
-
                     return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
                 } else if ($request->input('tipoDoc') == "Documento de Saída") {
-                    $documento->update([
-                        'tipoDoc' => $request->input('tipoDoc'),
-                        'idCliente' => $request->input('idCliente'),
-                        'data' => $datahora->format('Y-m-d H:i:s'),
-                        'idUser' => $request->user()->id,
-                    ]);
-
                     $linhasDoc = linhasDocumento::where('idDocumento', $documento->id)->get();
                     $numLinhasOrg = $linhasDoc->count();
                     $idLinhasOrg = array();
