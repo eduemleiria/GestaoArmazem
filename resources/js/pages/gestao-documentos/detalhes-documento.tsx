@@ -19,11 +19,11 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
     const getEstadoInfo = (estado: string) => {
         switch (estado) {
             case 'Pendente':
-                return { cor: 'bg-yellow-300', icon: <Clock10Icon className="w-5 pr-1"/>};
+                return { cor: 'bg-yellow-300', icon: <Clock10Icon className="w-5 pr-1" /> };
             case 'Concluído':
-                return { cor: 'bg-lime-400', icon: <CheckIcon className="w-5 pr-1"/>};
+                return { cor: 'bg-lime-400', icon: <CheckIcon className="w-5 pr-1" /> };
             default:
-                return { cor: 'bg-gray-400', icon: <Loader className="w-5 pr-1"/>};
+                return { cor: 'bg-gray-400', icon: <Loader className="w-5 pr-1" /> };
         }
     };
 
@@ -32,13 +32,32 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
     const getTipoDoc = (tipoDoc: string) => {
         switch (tipoDoc) {
             case 'Documento de Entrada':
-                return { tipo: "entrar", tipoData: "Chegada" };
+                return { tipo: 'entrar', tipoData: 'Chegada', camposGuiaT: '' };
             case 'Documento de Saída':
-                return { tipo: "sair", tipoData: "Saida" };
+                return {
+                    tipo: 'sair',
+                    tipoData: 'Saida',
+                    camposGuiaT: (
+                        <>
+                            <div className="flex">
+                                <h3 className="font-medium">Morada do cliente:</h3>
+                                <h3 className="pl-2">{documento.moradaC}</h3>
+                            </div>
+                            <div className="flex">
+                                <h3 className="font-medium">Morada do destinatário:</h3>
+                                <h3 className="pl-2">{documento.moradaD}</h3>
+                            </div>
+                            <div className="flex">
+                                <h3 className="font-medium">Matrícula:</h3>
+                                <h3 className="pl-2">{documento.matricula}</h3>
+                            </div>
+                        </>
+                    ),
+                };
             default:
-                return { tipo: "(Tipo de documento não econtrado)", tipoData: "(Tipo de documento não econtrado)" };
+                return { tipo: '(Tipo de documento não econtrado)', tipoData: '(Tipo de documento não econtrado)', camposGuiaT: '' };
         }
-    }
+    };
 
     const tipoDocInfo = getTipoDoc(documento.tipoDoc);
 
@@ -50,7 +69,7 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
                 <div className="grid gap-y-3">
                     <div className="flex">
                         <h3 className="font-medium">Tipo de Documento:</h3>
-                        <h3 className="pl-2 ">{documento.tipoDoc}</h3>
+                        <h3 className="pl-2">{documento.tipoDoc}</h3>
                     </div>
                     <div className="flex">
                         <h3 className="font-medium">ID:</h3>
@@ -67,6 +86,7 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
                             {documento.estado}
                         </h3>
                     </div>
+                    {tipoDocInfo.camposGuiaT}
                     <h3 className="font-medium">Paletes a {tipoDocInfo.tipo}:</h3>
                     <div className="rounded-md border-2">
                         <table className="w-full">

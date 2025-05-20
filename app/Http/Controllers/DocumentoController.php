@@ -116,6 +116,9 @@ class DocumentoController extends Controller
             'tipoDoc' => $documento->tipoDoc,
             'data' => $documento->data,
             'nomeCliente' => $documento->cliente?->nome ?? 'Sem Cliente',
+            'moradaC' => $documento->moradaC,
+            'moradaD' => $documento->moradaD,
+            'matricula' => $documento->matricula
         ];
 
         $linhasDocumento = linhasDocumento::where('idDocumento', $id)
