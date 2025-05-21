@@ -166,7 +166,6 @@ export default function AdicionarDocumento() {
                                         <option>Selecione um tipo de documento...</option>
                                         <option value="Documento de Entrada">Documento de Entrada</option>
                                         <option value="Documento de Saída">Documento de Saída</option>
-                                        <option value="Guia de Transporte">Guia de Transporte</option>
                                     </select>
                                 </FormControl>
                                 <FormMessage />

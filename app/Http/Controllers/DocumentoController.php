@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DocumentoController extends Controller
 {
@@ -354,5 +355,33 @@ class DocumentoController extends Controller
         }
 
         return redirect()->route('documento.index')->with('error', 'Erro ao remover o documento.');
+    }
+
+    public function gerarPDF($id)
+    {
+        $documento = Documento::where('id', $id)->with('cliente:id,nome')->first();
+        $linhasDocumento = linhasDocumento::where('idDocumento', $id)->with('artigo:id,nome')->get();
+
+        $infoDoc = [
+            'id' => $id,
+            'tipoDoc' => $documento->tipoDoc,
+            'data' => $documento->data,
+            'nomeCliente' => $documento->cliente?->nome,
+            'moradaC' => $documento->moradaC,
+            'moradaD' => $documento->moradaD,
+            'matricula' => $documento->matricula,
+        ];
+
+        $linhas = [];
+
+        foreach ($linhasDocumento as $linha) {
+            $linhas[] = [
+                'nomeArtigo' => $linha->artigo?->nome,
+                'quantidade' => $linha->quantidade
+            ];
+        }
+        $pdf = Pdf::loadView('guia-transporte', ['infoDoc' => $infoDoc, 'linhas' => $linhas]);
+
+        return $pdf->download('guia-transporte_n' . $id . '.pdf');
     }
 }

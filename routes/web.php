@@ -72,6 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('gestao-documentos/editar/{id}', [DocumentoController::class, 'edit'])->name('editar-documento.edit');
     Route::patch('gestao-documentos/editar/{id}', [DocumentoController::class, 'update'])->name('editar-documento.update');
     Route::delete('/remover-doc/{id}', [DocumentoController::class, 'destroy'])->name('remover-doc.destroy');
+    Route::get('gestao-documentos/guia-transporte/{id}', [DocumentoController::class, 'gerarPDF'])->name('documento-pdf.download');
 
     // Rotas da Gestão de Paletes
     Route::get('gestao-paletes/listar', [PaleteController::class, 'index'])->name('paletes.index');

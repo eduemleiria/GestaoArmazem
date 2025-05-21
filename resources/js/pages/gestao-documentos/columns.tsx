@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Documento } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { CheckIcon, Clock10Icon, EditIcon, MoreHorizontal, SearchIcon } from 'lucide-react';
+import { CheckIcon, Clock10Icon, EditIcon, FileDown, MoreHorizontal, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export const columns: ColumnDef<Documento>[] = [
@@ -49,7 +49,7 @@ export const columns: ColumnDef<Documento>[] = [
     {
         id: 'actions',
         header: () => 'Ações',
-        cell: function Cell({row}) {
+        cell: function Cell({ row }) {
             const [dropdownOpen, setDropdownOpen] = useState(false);
 
             const getEstado = (estado: string) => {
@@ -63,6 +63,23 @@ export const columns: ColumnDef<Documento>[] = [
                 }
             };
             const estadoAgr = getEstado(row.original.estado);
+
+            const getTipoDoc = (tipoDoc: string, estado: string) => {
+                if (tipoDoc == 'Documento de Saída') {
+                    return (
+                        <>
+                            <DropdownMenuItem asChild disabled={estado == 'Concluído' ? false : true}>
+                                <a href={route('documento-pdf.download', row.original.id)} target="_blank" rel="noopener noreferrer">
+                                    <FileDown className="mr-2" />
+                                    Download PDF
+                                </a>
+                            </DropdownMenuItem>
+                        </>
+                    );
+                }
+            };
+
+            const tipoDocAgr = getTipoDoc(row.original.tipoDoc, row.original.estado);
 
             return (
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -85,6 +102,7 @@ export const columns: ColumnDef<Documento>[] = [
                                 Editar
                             </Link>
                         </DropdownMenuItem>
+                        {tipoDocAgr}
                         <DropdownMenuItem asChild>
                             <DeleteDocumentoDialog documentoId={row.original.id} />
                         </DropdownMenuItem>
