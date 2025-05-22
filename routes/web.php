@@ -78,6 +78,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('gestao-paletes/listar', [PaleteController::class, 'index'])->name('paletes.index');
     Route::delete('/remover-palete/{id}', [PaleteController::class, 'destroy'])->name('remover-palete.destroy');
 
+    // Rotas da Gestão de Faturas
+
 });
 
 
