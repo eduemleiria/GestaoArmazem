@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { AppWindowIcon, Boxes, FilesIcon, HandshakeIcon, LayoutGrid, Package, User2Icon } from 'lucide-react';
+import { AppWindowIcon, Boxes, FileChartColumnIcon, FilesIcon, HandshakeIcon, LayoutGrid, Package, User2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 import { usePage } from '@inertiajs/react';
 
@@ -38,6 +38,11 @@ const mainNavItems: NavItem[] = [
         title: 'Gestão de Paletes',
         href: '/gestao-paletes/listar',
         icon: Boxes,
+    },
+    {
+        title: 'Gestão de Faturas',
+        href: '/gestao-faturas/listar',
+        icon: FileChartColumnIcon,
     },
     {
         title: 'Home Page',

@@ -6,6 +6,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ArtigoController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\FaturaController;
 use App\Http\Controllers\PaleteController;
 use Inertia\Inertia;
 
@@ -14,19 +15,19 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::get('servicos', function(){
+Route::get('servicos', function () {
     return Inertia::render('servicos');
 })->name('servicos');
 
-Route::get('precos', function(){
+Route::get('precos', function () {
     return Inertia::render('precos');
 })->name('precos');
 
-Route::get('contactos', function(){
+Route::get('contactos', function () {
     return Inertia::render('contactos');
 })->name('contactos');
 
-Route::get('sobre-nos', function(){
+Route::get('sobre-nos', function () {
     return Inertia::render('sobre-nos');
 })->name('sobre-nos');
 
@@ -48,7 +49,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rotas da Gestão de Clientes
     Route::get('gestao-clientes/listar', [ClienteController::class, 'index'])->name('cliente.index');
-    Route::get('gestao-clientes/adicionar', function () { return Inertia::render('gestao-clientes/adicionar-cliente'); })->name('adicionar.create');
+    Route::get('gestao-clientes/adicionar', function () {
+        return Inertia::render('gestao-clientes/adicionar-cliente');
+    })->name('adicionar.create');
     Route::post('adicionar-cliente', [ClienteController::class, 'store'])->name('adicionar-cliente.store');
     Route::get('gestao-clientes/editar/{id}', [ClienteController::class, 'edit'])->name('editar-cliente.edit');
     Route::patch('gestao-clientes/editar/{id}', [ClienteController::class, 'update'])->name('editar-cliente.update');
@@ -79,10 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/remover-palete/{id}', [PaleteController::class, 'destroy'])->name('remover-palete.destroy');
 
     // Rotas da Gestão de Faturas
-
+    Route::get('gestao-faturas/listar', [FaturaController::class, 'index'])->name('faturas.index');
 });
 
 
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

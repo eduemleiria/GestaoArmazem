@@ -91,3 +91,12 @@ export type Palete = {
     dataSaida: string;
     idLinhasDE: string;
 }
+
+export type Fatura = {
+    id: number;
+    total: string;
+    dataEmissao: string;
+    dataInicio: string;
+    dataFim: string;
+    idCliente: number;
+}

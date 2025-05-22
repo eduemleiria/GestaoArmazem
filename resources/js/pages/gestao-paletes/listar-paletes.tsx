@@ -13,7 +13,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface PageProps {
+interface Props {
     paletes: Palete[];
     flash?: {
         success?: string;
@@ -21,7 +21,7 @@ interface PageProps {
     };
 }
 
-export default function GestaoPaletes({ paletes, flash }: PageProps) {
+export default function GestaoPaletes({ paletes, flash }: Props) {
     
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

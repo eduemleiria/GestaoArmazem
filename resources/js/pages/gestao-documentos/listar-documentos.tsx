@@ -21,8 +21,7 @@ interface PageProps {
     };
 }
 
-export default function GestaoDocumentos() {
-    const { documentos, flash } = usePage<PageProps>().props;
+export default function GestaoDocumentos({ documentos, flash }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gestão de Documentos | Lista" />
