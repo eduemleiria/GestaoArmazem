@@ -21,8 +21,8 @@ interface PageProps {
     };
 }
 
-export default function GestaoPaletes() {
-    const { paletes, flash } = usePage<PageProps>().props;
+export default function GestaoPaletes({ paletes, flash }: PageProps) {
+    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gestão de Paletes | Lista" />
@@ -38,12 +38,6 @@ export default function GestaoPaletes() {
                     <AlertDescription>{flash.error}</AlertDescription>
                 </Alert>
             )}
-
-            <div className="p-2">
-                <Button asChild className="bg-green-400 hover:bg-green-500 hover:text-black">
-                    <Link href="/gestao-documentos/adicionar">Adicionar Palete</Link>
-                </Button>
-            </div>
             
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-1">
                 <div>

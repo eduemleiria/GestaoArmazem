@@ -392,7 +392,12 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                                         <FormItem>
                                             <FormLabel>Quantidade</FormLabel>
                                             <FormControl>
-                                                <Input {...field} disabled={desativado(index)} type="number" onWheel={(e) => e.target.blur()} />
+                                                <Input
+                                                    {...field}
+                                                    disabled={desativado(index)}
+                                                    type="number"
+                                                    onWheel={(e) => e.currentTarget.blur()}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

@@ -53,7 +53,7 @@ export default function AdicionarCliente() {
                             <FormItem>
                                 <FormLabel>Cliente</FormLabel>
                                 <FormControl>
-                                    <select {...field} className="w-full border p-2 rounded-md">
+                                    <select {...field} className="w-full rounded-md border p-2">
                                         <option>Selecione um cliente...</option>
                                         {clientes.map((cliente) => (
                                             <option key={cliente.id} value={cliente.id}>

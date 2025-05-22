@@ -48,18 +48,6 @@ export const columns: ColumnDef<Palete>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                            <Link href={route('detalhes-doc.show', row.original.id)}>
-                                <SearchIcon className="mr-2" />
-                                Detalhes
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={route('editar-documento.edit', row.original.id)}>
-                                <EditIcon className="mr-2" />
-                                Editar
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
                             <DeletePaleteDialog paleteId={row.original.id} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>

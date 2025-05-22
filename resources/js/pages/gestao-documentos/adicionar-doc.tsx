@@ -235,7 +235,7 @@ export default function AdicionarDocumento() {
                                                 <FormItem>
                                                     <FormLabel>Quantidade</FormLabel>
                                                     <FormControl>
-                                                        <Input {...field} type="number" onWheel={(e) => e.target.blur()} />
+                                                        <Input {...field} type="number" onWheel={(e) => e.currentTarget.blur()} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

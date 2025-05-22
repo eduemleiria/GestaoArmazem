@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Palete;
 use App\Models\Cliente;
+use App\Models\Artigo;
 use App\Models\Documento;
 use App\Models\linhasDocumento;
 use Inertia\Inertia;
@@ -30,8 +31,6 @@ class PaleteController extends Controller
             'paletes' => $paletes,
         ]);
     }
-
-    public function create() {}
 
     public function store(Request $request)
     {
@@ -99,8 +98,6 @@ class PaleteController extends Controller
                     return redirect()->route('documento.index')->with('error', 'Não existe nenhuma palete deste artigo nessa localização!');
                 }
             }
-        } else {
-            dd("Aqui cria-se as paletes através da gestão de paletes");
         }
     }
 
