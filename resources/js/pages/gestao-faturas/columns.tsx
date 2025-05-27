@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Fatura } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { EditIcon, FileDown, MoreHorizontal, SearchIcon } from 'lucide-react';
+import { EditIcon, MoreHorizontal, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export const columns: ColumnDef<Fatura>[] = [
@@ -29,8 +29,17 @@ export const columns: ColumnDef<Fatura>[] = [
         header: 'Fim',
     },
     {
-        accessorKey: 'total (€)',
-        header: 'Total',
+        accessorKey: 'total',
+        header: () => <div>Total</div>,
+        cell: ({ row }) => {
+            const amount = parseFloat(row.getValue('total'));
+            const formatted = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'EUR',
+            }).format(amount);
+
+            return <div className="font-medium">{formatted}</div>;
+        },
     },
     {
         id: 'actions',

@@ -83,6 +83,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rotas da Gestão de Faturas
     Route::get('gestao-faturas/listar', [FaturaController::class, 'index'])->name('faturas.index');
+    Route::get('gestao-faturas/adicionar', [FaturaController::class, 'create'])->name('fatura.create');
+    Route::get('/gestao-faturas/buscar-paletes-por-faturar/{idCliente}/{dataI}/{dataF}', [FaturaController::class, 'buscarPaletesPorFaturar']);
+    Route::post('adicionar-fatura', [FaturaController::class, 'store'])->name('adicionar-fatura.store');
 });
 
 

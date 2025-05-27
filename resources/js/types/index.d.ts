@@ -98,5 +98,13 @@ export type Fatura = {
     dataEmissao: string;
     dataInicio: string;
     dataFim: string;
-    idCliente: number;
+    idCliente: string;
 }
+
+export type LinhaFaturaProvisoria = {
+    idPalete: number;
+    nomeArtigo: string;
+    quantidade: number;
+    diasFaturar: number;
+    subtotal: string;
+};

@@ -131,6 +131,7 @@ export default function AdicionarDocumento() {
                 return { doc: '(Escolha um tipo de documento)', data: '(Escolha um tipo de documento)', camposGuiaT: '' };
         }
     };
+    
     const tipoDocAgr = getTipoDoc(tipoDoc);
 
     function onSubmit(values: z.infer<typeof formSchema>) {
