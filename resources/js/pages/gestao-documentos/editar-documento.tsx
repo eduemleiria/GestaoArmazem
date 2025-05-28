@@ -224,10 +224,6 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
     // Desativa os campos se o botão estiver como "confirmado"
     const desativado = (index: number) => confirmado[index] === 'Confirmado';
 
-    const resetEdit = () => {
-        window.location.reload();
-    };
-
     const getUserLogadoRole = (role: string) => {
         switch (role) {
             case 'gerente':
@@ -248,7 +244,7 @@ export default function EditarDocumento({ documento, linhasDocumento }: Props) {
                         </div>
                     ),
                     btnResetEdit: (
-                        <Button onClick={() => resetEdit()} className="flex w-25 bg-red-400 hover:bg-red-600 hover:font-bold">
+                        <Button type="button" onClick={() => window.location.reload()} className="flex w-25 bg-red-400 hover:bg-red-600 hover:font-bold">
                             Resetar
                         </Button>
                     ),

@@ -40,18 +40,17 @@ class FaturaController extends Controller
 
         $paletes = [];
 
-        $dataIniciofatura = Carbon::parse($dataI);
+        $dataInicioDocumento = Carbon::parse($dataI);
         $dataFimDocumeto = Carbon::parse($dataF);
 
         foreach ($paletesPorFaturar as $palete) {
-            $dataEntradaPalete = Carbon::parse($palete->dataEntrada);
-            $dataSaidaPalete = $palete->dataSaida != null ? Carbon::parse($palete->dataSaida) : (clone $dataFimDocumeto);
+            $dataEntradaPalete = Carbon::parse($palete->dataEntrada)->startOfDay();
+            $dataSaidaPalete = $palete->dataSaida != null ? Carbon::parse($palete->dataSaida)->startOfDay() : (clone $dataFimDocumeto);
 
-            $dataInicioFacturacao = $this->maxDate($dataEntradaPalete, $dataIniciofatura);
-            $dataInicioFacturacao2 = $dataInicioFacturacao->startOfDay();
+            $dataInicioFacturacao = $this->maxDate($dataEntradaPalete, $dataInicioDocumento);
             $dataFimFacturacao = $this->minDate($dataSaidaPalete, $dataFimDocumeto);
             $dataFimFacturacao2 = Carbon::parse($dataFimFacturacao)->addDay(1);
-            $dias = $dataInicioFacturacao2->diffInDays($dataFimFacturacao2);
+            $dias = $dataInicioFacturacao->diffInDays($dataFimFacturacao2);
 
             $subtotal = ((int)$dias * (int)$palete->quantidade) * 10;
 
