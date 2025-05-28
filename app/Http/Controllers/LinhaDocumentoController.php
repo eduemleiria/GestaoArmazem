@@ -18,6 +18,7 @@ class LinhaDocumentoController extends Controller
             ->pluck('localizacao');
 
         $paleteSair = Palete::where('idArtigo', $linha['idArtigo'])
+            ->where('dataSaida', "=", null)
             ->whereNotIn('localizacao', $localizacoesEmUso)
             ->orderBy('quantidade', 'asc')
             ->orderBy('dataEntrada', 'asc')

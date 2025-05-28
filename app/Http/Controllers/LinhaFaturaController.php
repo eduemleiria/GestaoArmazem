@@ -16,11 +16,5 @@ class LinhaFaturaController extends Controller
             'subtotal' => $linhaFatura['subtotal'],
             'idUser' => $request->user()->id
         ]);
-
-        $idLinhaFatura = LinhasFatura::latest('id')->first();
-
-        Palete::where('id', $linhaFatura['idPalete'])->update([
-            'idLinhaFatura' => $idLinhaFatura->id,
-        ]);
     }
 }

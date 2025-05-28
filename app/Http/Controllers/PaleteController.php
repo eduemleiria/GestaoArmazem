@@ -15,7 +15,10 @@ class PaleteController extends Controller
 {
     public function index()
     {
-        $paletes = Palete::with('artigo:id,nome,idCliente')->where('dataSaida', "=", null)->get()->map(function ($palete) {
+        $paletes = Palete::with('artigo:id,nome,idCliente')
+        ->where('dataSaida', "=", null)
+        ->get()
+        ->map(function ($palete) {
             $cliente = Cliente::where('id', $palete->artigo?->idCliente)->pluck('nome');
             return [
                 'id' => $palete->id,

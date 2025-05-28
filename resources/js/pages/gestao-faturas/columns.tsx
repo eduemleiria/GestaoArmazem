@@ -1,4 +1,4 @@
-import DeleteDocumentoDialog from '@/components/delete-documento-dialog';
+import DeleteFaturaDialog from '@/components/delete-fatura-dialog';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Fatura } from '@/types';
@@ -62,7 +62,7 @@ export const columns: ColumnDef<Fatura>[] = [
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <DeleteDocumentoDialog documentoId={row.original.id} />
+                            <DeleteFaturaDialog faturaId={row.original.id} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

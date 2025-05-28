@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignId('idArtigo')->references('id')->on('artigos');
             $table->foreignId('idLinhasDE')->references('id')->on('linhas_documento');
             $table->foreignId('idUser')->references('id')->on('users');
-            $table->foreignId('idLinhaFatura')->default(0);
         });
     }
 

@@ -30,7 +30,6 @@ class FaturaController extends Controller
 
         $paletesPorFaturar = Palete::whereIn('idArtigo', $artigos)
             ->with('artigo:id,nome')
-            ->where('idLinhaFatura', 0)
             ->where('dataEntrada', '<=', $dataF)
             ->where(function ($query) use ($dataI) {
                 $query->whereNull('dataSaida')
@@ -60,7 +59,7 @@ class FaturaController extends Controller
                 'idArtigo' => $palete->artigo?->id,
                 'nomeArtigo' => $palete->artigo?->nome,
                 'quantidade' => $palete->quantidade,
-                'diasFaturar' => $dias,
+                'dias' => $dias,
                 'subtotal' => $subtotal
             ];
         }
@@ -136,17 +135,30 @@ class FaturaController extends Controller
         });
 
         $linhasFatura = LinhasFatura::where('linhas_fatura.idFatura', $id)
-        ->join('paletes', 'linhas_fatura.idPalete', '=', 'paletes.id')
-        ->join('artigos', 'paletes.idArtigo', '=', 'artigos.id')
-        ->select(
-            'linhas_fatura.*',
-            'paletes.*',
-            'artigos.nome as nomeArtigo'
-        )->get();
+            ->join('paletes', 'linhas_fatura.idPalete', '=', 'paletes.id')
+            ->join('artigos', 'paletes.idArtigo', '=', 'artigos.id')
+            ->select(
+                'linhas_fatura.*',
+                'paletes.*',
+                'artigos.nome as nomeArtigo'
+            )->get();
 
         return Inertia::render('gestao-faturas/DetalhesFatura', [
             'fatura' => $faturaFeita->first(),
             'linhasFatura' => $linhasFatura
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $procurarFatura = Fatura::find($id);
+
+        if ($procurarFatura) {
+            LinhasFatura::where('idFatura', $id)->delete();
+            Fatura::where('id', $id)->delete();
+            return redirect()->route('faturas.index')->with('success', 'Fatura removida com sucesso!');
+        } else {
+            return redirect()->route('faturas.index')->with('error', 'Ocurreu um erro ao tentar remover a fatura!');
+        }
     }
 }

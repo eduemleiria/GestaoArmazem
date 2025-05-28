@@ -16,6 +16,9 @@ type Props = {
 };
 
 export default function DetalhesFatura({ fatura, linhasFatura }: Props) {
+
+
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gestão de Faturas | Detalhes" />
@@ -49,6 +52,7 @@ export default function DetalhesFatura({ fatura, linhasFatura }: Props) {
                                 <TableHead className="text-center">ID da Palete</TableHead>
                                 <TableHead className="text-center">Artigo</TableHead>
                                 <TableHead className="text-center">Data de Entrada da Palete</TableHead>
+                                <TableHead className="text-center">Data de Saída da Palete</TableHead>
                                 <TableHead className="text-center">Quantidade</TableHead>
                                 <TableHead className="text-center">Dias no armazém</TableHead>
                                 <TableHead className="text-center">Subtotal</TableHead>

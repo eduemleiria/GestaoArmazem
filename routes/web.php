@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/gestao-faturas/buscar-paletes-por-faturar/{idCliente}/{dataI}/{dataF}', [FaturaController::class, 'buscarPaletesPorFaturar']);
     Route::post('adicionar-fatura', [FaturaController::class, 'store'])->name('adicionar-fatura.store');
     Route::get('gestao-faturs/detalhes-fatura/{id}', [FaturaController::class, 'show'])->name('detalhes-fatura.show');
+    Route::delete('/remover-fatura/{id}', [FaturaController::class, 'destroy'])->name('remover-fatura.destroy');
 });
 
 

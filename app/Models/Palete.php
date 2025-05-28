@@ -18,7 +18,6 @@ class Palete extends Model
         'idArtigo',
         'idLinhasDE',
         'idUser',
-        'idLinhaFatura',
     ];
 
     public function artigo(): BelongsTo
@@ -29,9 +28,5 @@ class Palete extends Model
     public function linhasDocumento(): BelongsTo
     {
         return $this->belongsTo(linhasDocumento::class, 'idLinhasDE');
-    }
-
-    public function linhasFatura(): BelongsTo {
-        return $this->belongsTo(linhasFatura::class, 'idLinhaFatura');
     }
 }

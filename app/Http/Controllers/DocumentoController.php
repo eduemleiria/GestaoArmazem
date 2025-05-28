@@ -89,7 +89,10 @@ class DocumentoController extends Controller
                     'idUser' => $request->user()->id,
                 ]);
             } else if ($request['tipoDoc'] == "Documento de Saída") {
-                $artigoPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])->get();
+                $artigoPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])
+                ->where('dataSaida', "=", null)
+                ->get();
+
                 $totalPaletes = $artigoPaletes->sum('quantidade');
 
                 if ($linha['quantidade'] > $totalPaletes) {
