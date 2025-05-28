@@ -48,9 +48,10 @@ class FaturaController extends Controller
             $dataSaidaPalete = $palete->dataSaida != null ? Carbon::parse($palete->dataSaida) : (clone $dataFimDocumeto);
 
             $dataInicioFacturacao = $this->maxDate($dataEntradaPalete, $dataIniciofatura);
+            $dataInicioFacturacao2 = $dataInicioFacturacao->startOfDay();
             $dataFimFacturacao = $this->minDate($dataSaidaPalete, $dataFimDocumeto);
-            $dataFimFacturacao = $dataFimFacturacao->addDay(1);
-            $dias = $dataInicioFacturacao->diffInDays($dataFimFacturacao);
+            $dataFimFacturacao2 = Carbon::parse($dataFimFacturacao)->addDay(1);
+            $dias = $dataInicioFacturacao2->diffInDays($dataFimFacturacao2);
 
             $subtotal = ((int)$dias * (int)$palete->quantidade) * 10;
 
