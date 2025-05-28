@@ -12,7 +12,7 @@ class LinhaFaturaController extends Controller
         LinhasFatura::create([
             'idFatura' => $fatura->id,
             'idPalete' => $linhaFatura['idPalete'],
-            'dias' => $linhaFatura['diasFaturar'],
+            'dias' => $linhaFatura['dias'],
             'subtotal' => $linhaFatura['subtotal'],
             'idUser' => $request->user()->id
         ]);

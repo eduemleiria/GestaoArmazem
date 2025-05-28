@@ -3,7 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Cliente, LinhaFaturaProvisoria } from '@/types';
+import { BreadcrumbItem, Cliente, LinhaFatura } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Props {
     clientes: Cliente[];
-    LinhaFaturaProvisoria: LinhaFaturaProvisoria[];
+    LinhaFaturaProvisoria: LinhaFatura[];
 }
 const formSchema = z.object({
     idCliente: z.string().min(1, 'Selecione um cliente válido!').max(190),
@@ -31,7 +31,7 @@ const formSchema = z.object({
             idPalete: z.number(),
             idArtigo: z.number(),
             quantidade: z.number(),
-            diasFaturar: z.number(),
+            dias: z.number(),
             subtotal: z.number(),
         }),
     ),
@@ -48,7 +48,7 @@ export default function AdicionarFatura({ clientes }: Props) {
             idCliente: '',
             dataI: '',
             dataF: '',
-            linhaFatura: [{ idPalete: 0, idArtigo: 0, quantidade: 0, diasFaturar: 0, subtotal: 0 }],
+            linhaFatura: [{ idPalete: 0, idArtigo: 0, quantidade: 0, dias: 0, subtotal: 0 }],
             total: 0,
         },
     });
@@ -75,7 +75,7 @@ export default function AdicionarFatura({ clientes }: Props) {
                         idPalete: palete.idPalete,
                         idArtigo: palete.idArtigo,
                         quantidade: palete.quantidade,
-                        diasFaturar: palete.diasFaturar,
+                        dias: palete.dias,
                         subtotal: palete.subtotal,
                     })),
                 );
@@ -169,7 +169,7 @@ export default function AdicionarFatura({ clientes }: Props) {
                     </div>
                     <div className="mt-5">
                         {isLoading == true ? (
-                            <p className="text-center font-bold">Loading...</p>
+                            <p className="text-center font-bold m-5">Insira um cliente, data de inicio e data de fim de faturação.</p>
                         ) : (
                             <>
                                 <p className="font-bold">Paletes a faturar</p>
@@ -231,11 +231,11 @@ export default function AdicionarFatura({ clientes }: Props) {
                                                 <TableCell>
                                                     <FormField
                                                         control={form.control}
-                                                        name={`linhaFatura.${index}.diasFaturar`}
+                                                        name={`linhaFatura.${index}.dias`}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <span>{linha.diasFaturar}</span>
+                                                                    <span>{linha.dias}</span>
                                                                 </FormControl>
                                                             </FormItem>
                                                         )}

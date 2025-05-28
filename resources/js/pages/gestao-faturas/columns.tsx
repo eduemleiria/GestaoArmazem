@@ -56,15 +56,9 @@ export const columns: ColumnDef<Fatura>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                            <Link href={route('detalhes-doc.show', row.original.id)}>
+                            <Link href={route('detalhes-fatura.show', row.original.id)}>
                                 <SearchIcon className="mr-2" />
                                 Detalhes
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={route('editar-documento.edit', row.original.id)}>
-                                <EditIcon className="mr-2" />
-                                Editar
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>

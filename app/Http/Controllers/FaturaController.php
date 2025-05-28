@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Fatura;
+use App\Models\LinhasFatura;
 use App\Models\Palete;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
@@ -40,14 +41,14 @@ class FaturaController extends Controller
 
         $paletes = [];
 
-        $dataInicioDocumento = Carbon::parse($dataI);
+        $dataIniciofatura = Carbon::parse($dataI);
         $dataFimDocumeto = Carbon::parse($dataF);
 
         foreach ($paletesPorFaturar as $palete) {
             $dataEntradaPalete = Carbon::parse($palete->dataEntrada);
             $dataSaidaPalete = $palete->dataSaida != null ? Carbon::parse($palete->dataSaida) : (clone $dataFimDocumeto);
 
-            $dataInicioFacturacao = $this->maxDate($dataEntradaPalete, $dataInicioDocumento);
+            $dataInicioFacturacao = $this->maxDate($dataEntradaPalete, $dataIniciofatura);
             $dataFimFacturacao = $this->minDate($dataSaidaPalete, $dataFimDocumeto);
             $dataFimFacturacao = $dataFimFacturacao->addDay(1);
             $dias = $dataInicioFacturacao->diffInDays($dataFimFacturacao);
@@ -116,5 +117,36 @@ class FaturaController extends Controller
         }
 
         return redirect()->route('faturas.index')->with('success', 'Fatura adicionada com sucesso!');
+    }
+
+    public function show($id)
+    {
+        $faturaFeita = Fatura::with('cliente:id,nome')->where('id', $id)->get()->map(function ($fatura) {
+            $dataInicio = new DateTime($fatura->dataInicio);
+            $dataFim = new DateTime($fatura->dataFim);
+
+            return [
+                'id' => $fatura->id,
+                'nomeCliente' => $fatura->cliente?->nome ?? 'Sem Cliente',
+                'dataInicio' => $dataInicio->format('Y-m-d'),
+                'dataFim' => $dataFim->format('Y-m-d'),
+                'dataEmissao' => $fatura->dataEmissao,
+                'total' => $fatura->total,
+            ];
+        });
+
+        $linhasFatura = LinhasFatura::where('linhas_fatura.idFatura', $id)
+        ->join('paletes', 'linhas_fatura.idPalete', '=', 'paletes.id')
+        ->join('artigos', 'paletes.idArtigo', '=', 'artigos.id')
+        ->select(
+            'linhas_fatura.*',
+            'paletes.*',
+            'artigos.nome as nomeArtigo'
+        )->get();
+
+        return Inertia::render('gestao-faturas/DetalhesFatura', [
+            'fatura' => $faturaFeita->first(),
+            'linhasFatura' => $linhasFatura
+        ]);
     }
 }
