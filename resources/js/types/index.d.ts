@@ -73,6 +73,7 @@ export type Cliente = {
     id: number;
     nome: string;
     morada: string;
+    password: string;
 };
 
 export type Artigo = {

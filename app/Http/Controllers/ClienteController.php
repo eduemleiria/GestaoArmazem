@@ -11,7 +11,20 @@ class ClienteController extends Controller
 {
     public function index()
     {
-        $clientes = Cliente::select('id', 'nome', 'morada')->get();
+        $clientes = Cliente::get()->map(function ($cliente) {
+            if ($cliente->password == null) {
+                $acesso = "Sem acesso";
+            } else {
+                $acesso = "Com acesso";
+            }
+
+            return [
+                'id' => $cliente->id,
+                'nome' => $cliente->nome,
+                'morada' => $cliente->morada,
+                'acesso' => $acesso
+            ];
+        });
 
         return Inertia::render('gestao-clientes/listar-clientes', [
             'clientes' => $clientes
@@ -20,9 +33,9 @@ class ClienteController extends Controller
 
     public function store(Request $request)
     {
-        if($request['password'] != null){
+        if ($request['password'] != null) {
             $password = Hash::make($request['password']);
-        }else{
+        } else {
             $password = null;
         }
 
@@ -47,10 +60,17 @@ class ClienteController extends Controller
     {
         $cliente = Cliente::find($id);
 
+        if ($request['password'] == null) {
+            $password = null;
+        } else {
+            $password = Hash::make($request['password']);
+        }
+
         $cliente->update([
             'nome' => $request->input('nome'),
             'morada' => $request->input('morada'),
-            'idUser'=> $request->user()->id,
+            'password' => $password,
+            'idUser' => $request->user()->id,
         ]);
 
         return redirect()->route('cliente.index')->with('success', 'Cliente alterado com sucesso!');

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { EditIcon, MoreHorizontal } from 'lucide-react';
+import { CheckIcon, EditIcon, MoreHorizontal, X } from 'lucide-react';
 import DeleteClienteDialog from '@/components/delete-cliente-dialog';
 import { Cliente } from '@/types';
 
@@ -18,6 +18,28 @@ export const columns: ColumnDef<Cliente>[] = [
     {
         accessorKey: 'morada',
         header: 'Morada',
+    },
+    {
+        accessorKey: 'acesso',
+        header: () => <div className="text-center">Acesso há API</div>,
+        cell: ({ row }) => {
+            const acesso: string = row.getValue('acesso');
+            if (acesso == 'Com acesso') {
+                return (
+                    <div className="mx-auto flex w-27 items-center justify-center rounded bg-lime-400 text-right font-bold">
+                        <CheckIcon className="w-5 pr-1" />
+                        {acesso}
+                    </div>
+                );
+            } else if (acesso == 'Sem acesso') {
+                return (
+                    <div className="mx-auto flex w-27 items-center justify-center rounded bg-red-400 text-right font-bold">
+                        <X className="w-5 pr-1" />
+                        {acesso}
+                    </div>
+                );
+            }
+        },
     },
     {
         id: 'actions',
