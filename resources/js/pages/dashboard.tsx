@@ -3,7 +3,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/comp
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { PackageMinus, PackagePlus, TrendingUpIcon } from 'lucide-react';
+import { Package, PackageMinus, PackagePlus, TrendingUpIcon } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,9 +15,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Props {
     numDocsEntHj: number;
     numDocsSaidaHj: number;
+    paletesNoArmazem: number;
 }
 
-export default function Dashboard({ numDocsEntHj, numDocsSaidaHj }: Props) {
+export default function Dashboard({ numDocsEntHj, numDocsSaidaHj, paletesNoArmazem }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -42,28 +43,14 @@ export default function Dashboard({ numDocsEntHj, numDocsSaidaHj }: Props) {
                     </Card>
                 </div>
                 <div className="w-100 p-4">
-                    <Card className="@container/card">
-                        <CardHeader className="relative">
-                            <CardDescription>Paletes no armazém</CardDescription>
-                            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">439</CardTitle>
-                            <div className="absolute top-4 right-4">
-                                <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-                                    <TrendingUpIcon className="size-3" />
-                                    +12.5%
-                                </Badge>
-                            </div>
+                    <Card className="@container/card items-center">
+                        <Package className="size-11" />
+                        <CardHeader className="items-center justify-center">
+                            <CardDescription>Total de Paletes no Armazém</CardDescription>
+                            <CardTitle className="text-2xl font-semibold">{paletesNoArmazem}</CardTitle>
                         </CardHeader>
-                        <CardFooter className="flex-col items-start gap-1 text-sm">
-                            <div className="line-clamp-1 flex gap-2 font-medium">
-                                Trending up this month <TrendingUpIcon className="size-4" />
-                            </div>
-                            <div className="text-muted-foreground">Visitors for the last 6 months</div>
-                        </CardFooter>
                     </Card>
                 </div>
-            </div>
-            <div>
-                <h1>tabela com documentos de entrada saida de hoje aqui com opções de filtrar por doc de entrada ou saida</h1>
             </div>
         </AppLayout>
     );

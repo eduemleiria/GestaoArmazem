@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cliente;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
@@ -19,9 +20,16 @@ class ClienteController extends Controller
 
     public function store(Request $request)
     {
+        if($request['password'] != null){
+            $password = Hash::make($request['password']);
+        }else{
+            $password = null;
+        }
+
         $cliente = Cliente::create([
             'nome' => $request['nome'],
             'morada' => $request['morada'],
+            'password' => $password,
             'idUser' => $request->user()->id,
         ]);
         return redirect()->route('cliente.index')->with('success', 'Cliente adicionado com sucesso!');
