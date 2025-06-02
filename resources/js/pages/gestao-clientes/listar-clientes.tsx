@@ -1,10 +1,10 @@
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Cliente, columns } from './columns';
+import { type BreadcrumbItem, Pagination, Cliente } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { columns } from './columns';
 import { DataTable } from './data-table';
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -21,8 +21,8 @@ interface PageProps {
     };
 }
 
-export default function GestaoUsers() {
-    const { clientes, flash } = usePage<PageProps>().props;
+export default function GestaoUsers({ clientes, flash }: PageProps) {
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gestão de Clientes | Lista" />

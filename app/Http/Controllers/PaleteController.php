@@ -15,10 +15,10 @@ class PaleteController extends Controller
 {
     public function index()
     {
-        $paletes = Palete::with('artigo:id,nome,idCliente')
-        ->where('dataSaida', "=", null)
-        ->get()
-        ->map(function ($palete) {
+        $paletesPaginadas = Palete::with('artigo:id,nome,idCliente')->where('dataSaida', "=", null)->paginate(10);
+
+        $paletesPaginadas->getCollection()
+        ->transform(function ($palete) {
             $cliente = Cliente::where('id', $palete->artigo?->idCliente)->pluck('nome');
             return [
                 'id' => $palete->id,
@@ -31,7 +31,7 @@ class PaleteController extends Controller
         });
 
         return Inertia::render('gestao-paletes/listar-paletes', [
-            'paletes' => $paletes,
+            'paletes' => $paletesPaginadas,
         ]);
     }
 

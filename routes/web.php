@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('gestao-documentos/adicionar', [DocumentoController::class, 'create'])->name('adicionar-doc.create');
     Route::get('/gestao-documentos/busca-artigos-com-paletes/{idCliente}', [DocumentoController::class, 'buscaArtigosPaletes']);
     Route::get('/gestao-documentos/busca-artigos/{idCliente}', [DocumentoController::class, 'buscaArtigos']);
+    Route::get('gestao-documentos/procurar/{procurar}', [DocumentoController::class, 'procurarDocumentos']);
     Route::post('adicionar-doc', [DocumentoController::class, 'store'])->name('adicionar-doc.store');
     Route::get('gestao-documentos/detalhes/{id}', [DocumentoController::class, 'show'])->name('detalhes-doc.show');
     Route::get('gestao-documentos/editar/{id}', [DocumentoController::class, 'edit'])->name('editar-documento.edit');

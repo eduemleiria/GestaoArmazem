@@ -33,9 +33,37 @@ class DocumentoController extends Controller
         return response()->json($artigos);
     }
 
+    public function procurarDocumentos($procurar)
+    {
+        $documentos = Documento::with('cliente:id,nome')
+            ->where(function ($query) use ($procurar) {
+                $query->where('id', $procurar)
+                    ->orWhere('estado', $procurar)
+                    ->orWhere('tipoDoc', $procurar)
+                    ->orWhere('data', 'like', "%{$procurar}%")
+                    ->orWhereHas('cliente', function ($query) use ($procurar) {
+                        $query->where('nome', 'like', "%{$procurar}%");
+                    });
+            })
+            ->paginate(5)
+            ->through(function ($documento) {
+                return [
+                    'id' => $documento->id,
+                    'estado' => $documento->estado,
+                    'tipoDoc' => $documento->tipoDoc,
+                    'data' => $documento->data,
+                    'nomeCliente' => $documento->cliente?->nome ?? 'Sem Cliente',
+                ];
+            });
+
+        return response()->json($documentos);
+    }
+
     public function index()
     {
-        $documentos = Documento::with('cliente:id,nome')->get()->map(function ($documento) {
+        $documentosPaginados = Documento::with('cliente:id,nome')->paginate(5);
+
+        $documentosPaginados->getCollection()->transform(function ($documento) {
             return [
                 'id' => $documento->id,
                 'estado' => $documento->estado,
@@ -46,7 +74,7 @@ class DocumentoController extends Controller
         });
 
         return Inertia::render('gestao-documentos/listar-documentos', [
-            'documentos' => $documentos,
+            'documentos' => $documentosPaginados,
         ]);
     }
 
@@ -90,8 +118,8 @@ class DocumentoController extends Controller
                 ]);
             } else if ($request['tipoDoc'] == "Documento de Saída") {
                 $artigoPaletes = Palete::where('idArtigo', '=', $linha['idArtigo'])
-                ->where('dataSaida', "=", null)
-                ->get();
+                    ->where('dataSaida', "=", null)
+                    ->get();
 
                 $totalPaletes = $artigoPaletes->sum('quantidade');
 

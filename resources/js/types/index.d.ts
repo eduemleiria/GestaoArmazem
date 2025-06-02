@@ -32,6 +32,24 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
+export interface Pagination<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+}
+
+export interface PaginationProps {
+    currentPage: number;
+    lastPage: number;
+    nextPageUrl: string | null;
+    prevPageUrl: string | null;
+    onPageChange: (url: string | null) => void;
+}
+
 export interface User {
     id: number;
     name: string;
