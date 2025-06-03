@@ -16,20 +16,20 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+export interface PaginatedResult {
+    data: Documento[];
+    current_page: number;
+    last_page: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+}
+
 interface PageProps {
     documentos: Pagination<Documento>;
     flash?: {
         success?: string;
         error?: string;
     };
-}
-
-interface PaginatedResult {
-    data: Documento[];
-    current_page: number;
-    last_page: number;
-    next_page_url: string | null;
-    prev_page_url: string | null;
 }
 
 export default function GestaoDocumentos({ documentos, flash }: PageProps) {

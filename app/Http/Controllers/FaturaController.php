@@ -14,6 +14,35 @@ use DateTime;
 
 class FaturaController extends Controller
 {
+    public function procurarFaturas($procurar)
+    {
+        $faturas = Fatura::with('cliente:id,nome')
+            ->where(function ($query) use ($procurar) {
+                $query->where('id', $procurar)
+                    ->orWhereHas('cliente', function ($query) use ($procurar) {
+                        $query->where('nome', 'like', "%{$procurar}%");
+                    })
+                    ->orWhere('dataEmissao', 'like', "%{$procurar}%")
+                    ->orWhere('dataInicio', 'like', "%{$procurar}%")
+                    ->orWhere('dataFim', 'like', "%{$procurar}%")
+                    ->orWhere('total', 'like', "%{$procurar}%");
+            })
+            ->paginate(5);
+
+        $faturas->getCollection()->transform(function ($fatura) {
+            return [
+                'id' => $fatura->id,
+                'nomeCliente' => $fatura->cliente?->nome,
+                'dataEmissao' => $fatura->dataEmissao,
+                'dataInicio' => $fatura->dataInicio,
+                'dataFim' => $fatura->dataFim,
+                'total' => $fatura->total,
+            ];
+        });
+
+        return response()->json($faturas);
+    }
+
     private function minDate($a, $b)
     {
         return $a->greaterThan($b) ? $b : $a;
@@ -69,7 +98,8 @@ class FaturaController extends Controller
 
     public function index()
     {
-        $faturas = Fatura::with('cliente:id,nome')->get()->map(function ($fatura) {
+        $faturas = Fatura::with('cliente:id,nome')->paginate(5);
+        $faturas->getCollection()->transform(function ($fatura) {
             $dataInicio = new DateTime($fatura->dataInicio);
             $dataFim = new DateTime($fatura->dataFim);
 

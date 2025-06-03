@@ -3,14 +3,7 @@ import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReact
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { Button } from '@/components/ui/button';
-
-interface PaginationProps {
-    currentPage: number;
-    lastPage: number;
-    nextPageUrl: string | null;
-    prevPageUrl: string | null;
-    onPageChange: (url: string | null) => void;
-}
+import { PaginationProps } from '@/types';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];

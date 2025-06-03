@@ -80,10 +80,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rotas da Gestão de Paletes
     Route::get('gestao-paletes/listar', [PaleteController::class, 'index'])->name('paletes.index');
+    Route::get('/gestao-paletes/procurar/{procurar}', [PaleteController::class, 'procurarPaletes']);
     Route::delete('/remover-palete/{id}', [PaleteController::class, 'destroy'])->name('remover-palete.destroy');
 
     // Rotas da Gestão de Faturas
     Route::get('gestao-faturas/listar', [FaturaController::class, 'index'])->name('faturas.index');
+    Route::get('/gestao-faturas/procurar/{procurar}', [FaturaController::class, 'procurarFaturas']);
     Route::get('gestao-faturas/adicionar', [FaturaController::class, 'create'])->name('fatura.create');
     Route::get('/gestao-faturas/buscar-paletes-por-faturar/{idCliente}/{dataI}/{dataF}', [FaturaController::class, 'buscarPaletesPorFaturar']);
     Route::post('adicionar-fatura', [FaturaController::class, 'store'])->name('adicionar-fatura.store');

@@ -1,44 +1,26 @@
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import * as React from 'react';
+import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { PaginationProps } from '@/types';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    pagination?: PaginationProps;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-    const [globalFilter, setGlobalFilter] = React.useState<any>([]);
-
+export function DataTable<TData, TValue>({ columns, data, pagination }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        onColumnFiltersChange: setGlobalFilter,
-        getFilteredRowModel: getFilteredRowModel(),
-        state: {
-            globalFilter,
-        },
     });
 
     return (
         <div>
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Insira o valor que procura..."
-                    value={globalFilter ?? ''}
-                    onChange={(e) => {
-                        setGlobalFilter(e.target.value);
-                        table.setGlobalFilter(String(e.target.value));
-                    }}
-                    className="max-w-sm"
-                />
-            </div>
             <div className="rounded-md border">
                 <Table className="text-center">
                     <TableHeader>
@@ -73,14 +55,29 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 p-4">
-                <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                    Anterior
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                    Próximo
-                </Button>
-            </div>
+            {pagination && (
+                <div className="flex items-center justify-end space-x-2 p-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => pagination.onPageChange(pagination.prevPageUrl)}
+                        disabled={!pagination.prevPageUrl}
+                    >
+                        Anterior
+                    </Button>
+                    <span className="text-sm">
+                        Página {pagination.currentPage} de {pagination.lastPage}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => pagination.onPageChange(pagination.nextPageUrl)}
+                        disabled={!pagination.nextPageUrl}
+                    >
+                        Próximo
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

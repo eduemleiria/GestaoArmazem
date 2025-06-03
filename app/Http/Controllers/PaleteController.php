@@ -5,30 +5,58 @@ namespace App\Http\Controllers;
 use App\Models\Palete;
 use App\Models\Cliente;
 use App\Models\Artigo;
-use App\Models\Documento;
-use App\Models\linhasDocumento;
+use App\Models\linhaspalete;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use DateTime;
 
 class PaleteController extends Controller
 {
+    public function procurarPaletes($procurar)
+    {
+        $paletes = Palete::with('artigo:id,nome,idCliente')
+            ->where(function ($query) use ($procurar) {
+                $query->where('id', $procurar)
+                    ->orWhereHas('artigo', function ($query) use ($procurar) {
+                        $query->where('nome', 'like', "%{$procurar}%");
+                    })
+                    ->orWhere('quantidade', $procurar)
+                    ->orWhere('localizacao', $procurar)
+                    ->orWhere('dataEntrada', 'like', "%{$procurar}%");
+            })
+            ->paginate(5);
+
+        $paletes->getCollection()->transform(function ($palete) {
+            $cliente = Cliente::find($palete->artigo?->idCliente)?->nome ?? 'Sem Cliente';
+            return [
+                'id' => $palete->id,
+                'clienteArtigo' => $cliente,
+                'nomeArtigo' => $palete->artigo?->nome ?? 'Sem Artigo',
+                'quantidade' => $palete->quantidade,
+                'localizacao' => $palete->localizacao,
+                'dataEntrada' => $palete->dataEntrada,
+            ];
+        });
+
+        return response()->json($paletes);
+    }
+
     public function index()
     {
         $paletesPaginadas = Palete::with('artigo:id,nome,idCliente')->where('dataSaida', "=", null)->paginate(10);
 
         $paletesPaginadas->getCollection()
-        ->transform(function ($palete) {
-            $cliente = Cliente::where('id', $palete->artigo?->idCliente)->pluck('nome');
-            return [
-                'id' => $palete->id,
-                'quantidade' => $palete->quantidade,
-                'localizacao' => $palete->localizacao,
-                'dataEntrada' => $palete->dataEntrada,
-                'nomeArtigo' => $palete->artigo?->nome ?? 'Sem Artigo',
-                'clienteArtigo' => $cliente,
-            ];
-        });
+            ->transform(function ($palete) {
+                $cliente = Cliente::find($palete->artigo?->idCliente)?->nome ?? 'Sem Cliente';
+                return [
+                    'id' => $palete->id,
+                    'quantidade' => $palete->quantidade,
+                    'localizacao' => $palete->localizacao,
+                    'dataEntrada' => $palete->dataEntrada,
+                    'nomeArtigo' => $palete->artigo?->nome ?? 'Sem Artigo',
+                    'clienteArtigo' => $cliente,
+                ];
+            });
 
         return Inertia::render('gestao-paletes/listar-paletes', [
             'paletes' => $paletesPaginadas,
@@ -37,7 +65,7 @@ class PaleteController extends Controller
 
     public function store(Request $request)
     {
-        $documento = Documento::find($request->id);
+        $palete = palete::find($request->id);
         $data = $request["dataP"];
         $hora = $request["horaP"];
 
@@ -45,8 +73,8 @@ class PaleteController extends Controller
 
         $datahora = new DateTime($datahoraJuntar);
 
-        if ($request->tipoDoc == "Documento de Entrada") {
-            foreach ($request->linhaDocumento as $linha) {
+        if ($request->tipoDoc == "palete de Entrada") {
+            foreach ($request->linhapalete as $linha) {
                 if ($linha['confirmado'] == "Confirmado") {
                     Palete::create([
                         'idArtigo' => $linha['idArtigo'],
@@ -61,8 +89,8 @@ class PaleteController extends Controller
                     continue;
                 }
             }
-        } else if ($request->tipoDoc == "Documento de Saída") {
-            foreach ($request->linhaDocumento as $linha) {
+        } else if ($request->tipoDoc == "palete de Saída") {
+            foreach ($request->linhapalete as $linha) {
                 $verificaLocQuant = Palete::where("localizacao", $linha['localizacao'])
                     ->where('quantidade', '>=', $linha['quantidade'])
                     ->where('idArtigo', $linha['idArtigo'])
@@ -94,11 +122,11 @@ class PaleteController extends Controller
                         continue;
                     }
 
-                    $documento->update([
+                    $palete->update([
                         'estado' => 'Concluído',
                     ]);
                 } else {
-                    return redirect()->route('documento.index')->with('error', 'Não existe nenhuma palete deste artigo nessa localização!');
+                    return redirect()->route('palete.index')->with('error', 'Não existe nenhuma palete deste artigo nessa localização!');
                 }
             }
         }
