@@ -68,6 +68,7 @@ export type Documento = {
     tipoDoc: string;
     data: string;
     hora: string;
+    dataEmissao: string;
     moradaC: string;
     moradaD: string;
     matricula: string;

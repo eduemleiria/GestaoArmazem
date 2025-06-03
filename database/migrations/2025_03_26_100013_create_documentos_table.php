@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('moradaC')->nullable();
             $table->string('moradaD')->nullable();
             $table->string('matricula')->nullable();
+            $table->date('dataEmissao');
             $table->foreignId('idCliente')->references('id')->on('clientes');
             $table->foreignId('idUser')->references('id')->on('users');
         });

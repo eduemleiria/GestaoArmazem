@@ -18,6 +18,7 @@ class Documento extends Model
         'moradaC',
         'moradaD',
         'matricula',
+        'dataEmissao',
         'idCliente',
         'idUser',
     ];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Palete;
 use App\Models\Cliente;
 use App\Models\Artigo;
+use App\Models\Documento;
 use App\Models\linhaspalete;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -73,8 +74,8 @@ class PaleteController extends Controller
 
         $datahora = new DateTime($datahoraJuntar);
 
-        if ($request->tipoDoc == "palete de Entrada") {
-            foreach ($request->linhapalete as $linha) {
+        if ($request->tipoDoc == "Documento de Entrada") {
+            foreach ($request->linhaDocumento as $linha) {
                 if ($linha['confirmado'] == "Confirmado") {
                     Palete::create([
                         'idArtigo' => $linha['idArtigo'],
@@ -89,8 +90,8 @@ class PaleteController extends Controller
                     continue;
                 }
             }
-        } else if ($request->tipoDoc == "palete de Saída") {
-            foreach ($request->linhapalete as $linha) {
+        } else if ($request->tipoDoc == "Documento de Saída") {
+            foreach ($request->linhaDocumento as $linha) {
                 $verificaLocQuant = Palete::where("localizacao", $linha['localizacao'])
                     ->where('quantidade', '>=', $linha['quantidade'])
                     ->where('idArtigo', $linha['idArtigo'])
@@ -122,8 +123,8 @@ class PaleteController extends Controller
                         continue;
                     }
 
-                    $palete->update([
-                        'estado' => 'Concluído',
+                    Documento::where('id', $request['id'])->update([
+                        'estado' => "Concluído",
                     ]);
                 } else {
                     return redirect()->route('palete.index')->with('error', 'Não existe nenhuma palete deste artigo nessa localização!');

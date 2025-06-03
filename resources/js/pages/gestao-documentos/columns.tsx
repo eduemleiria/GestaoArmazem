@@ -25,6 +25,10 @@ export const columns: ColumnDef<Documento>[] = [
         header: 'Data do Acontecimento Previsto',
     },
     {
+        accessorKey: 'dataEmissao',
+        header: 'Data de Emissão',
+    },
+    {
         accessorKey: 'estado',
         header: () => <div className="text-center">Estado</div>,
         cell: ({ row }) => {

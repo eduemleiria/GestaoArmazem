@@ -69,6 +69,7 @@ class DocumentoController extends Controller
                 'estado' => $documento->estado,
                 'tipoDoc' => $documento->tipoDoc,
                 'data' => $documento->data,
+                'dataEmissao' => $documento->dataEmissao,
                 'nomeCliente' => $documento->cliente?->nome ?? 'Sem Cliente',
             ];
         });
@@ -104,6 +105,7 @@ class DocumentoController extends Controller
             'moradaC' => $request['moradaC'] ?? null,
             'moradaD' => $request['moradaD'] ?? null,
             'matricula' => $request['matricula'] ?? null,
+            'dataEmissao' => date('Y-m-d'),
             'idUser' => $request->user()->id,
         ]);
 
@@ -147,6 +149,7 @@ class DocumentoController extends Controller
             'estado' => $documento->estado,
             'tipoDoc' => $documento->tipoDoc,
             'data' => $documento->data,
+            'dataEmissao' => $documento->dataEmissao,
             'nomeCliente' => $documento->cliente?->nome ?? 'Sem Cliente',
             'moradaC' => $documento->moradaC,
             'moradaD' => $documento->moradaD,
@@ -236,17 +239,11 @@ class DocumentoController extends Controller
                 'moradaD' => $request->input('moradaD'),
                 'matricula' => $request->input('matricula'),
                 'data' => $datahora->format('Y-m-d H:i:s'),
+                'dataEmissao' => date('Y-m-d'),
                 'idUser' => $request->user()->id,
             ]);
 
             if ($userLogadoRole == "admin") {
-                $documento->update([
-                    'tipoDoc' => $request->input('tipoDoc'),
-                    'idCliente' => $request->input('idCliente'),
-                    'data' => $datahora->format('Y-m-d H:i:s'),
-                    'idUser' => $request->user()->id,
-                ]);
-
                 if ($request->input('tipoDoc') == "Documento de Entrada") {
                     foreach ($request->linhaDocumento as $linha) {
                         linhasDocumento::where('id', $linha['id'])->update([
@@ -397,6 +394,7 @@ class DocumentoController extends Controller
             'id' => $id,
             'tipoDoc' => $documento->tipoDoc,
             'data' => $documento->data,
+            'dataEmissao' => $documento->dataEmissao,
             'nomeCliente' => $documento->cliente?->nome,
             'moradaC' => $documento->moradaC,
             'moradaD' => $documento->moradaD,

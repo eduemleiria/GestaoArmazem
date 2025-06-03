@@ -80,6 +80,10 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
                         <h3 className="pl-2">{documento.data}</h3>
                     </div>
                     <div className="flex">
+                        <h3 className="font-medium">Data de Emissão:</h3>
+                        <h3 className="pl-2">{documento.dataEmissao}</h3>
+                    </div>
+                    <div className="flex">
                         <h3 className="pr-2 font-medium">Estado do documento:</h3>
                         <h3 className={`flex rounded px-2 font-semibold ${estadoInfo.cor}`}>
                             {estadoInfo.icon}
