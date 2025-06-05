@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('matricula')->nullable();
             $table->date('dataEmissao');
             $table->foreignId('idCliente')->references('id')->on('clientes');
-            $table->foreignId('idUser')->references('id')->on('users');
+            $table->foreignId('idUser')->nullable()->references('id')->on('users');
         });
     }
 
