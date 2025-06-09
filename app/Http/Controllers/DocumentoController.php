@@ -41,6 +41,7 @@ class DocumentoController extends Controller
                     ->orWhere('estado', $procurar)
                     ->orWhere('tipoDoc', $procurar)
                     ->orWhere('data', 'like', "%{$procurar}%")
+                    ->orWhere('dataEmissao', 'like', "%{$procurar}%")
                     ->orWhereHas('cliente', function ($query) use ($procurar) {
                         $query->where('nome', 'like', "%{$procurar}%");
                     });
@@ -52,6 +53,7 @@ class DocumentoController extends Controller
                     'estado' => $documento->estado,
                     'tipoDoc' => $documento->tipoDoc,
                     'data' => $documento->data,
+                    'dataEmissao' => $documento->dataEmissao,
                     'nomeCliente' => $documento->cliente?->nome ?? 'Sem Cliente',
                 ];
             });
@@ -243,6 +245,29 @@ class DocumentoController extends Controller
                 'idUser' => $request->user()->id,
             ]);
 
+            $linhasDoc = linhasDocumento::where('idDocumento', $documento->id)->get();
+            $numLinhasOrg = $linhasDoc->count();
+            $idLinhasOrg = array();
+            $idLinhasReq = array();
+
+            for ($i = 0; $i < $numLinhasOrg; $i++) {
+                if (array_key_exists($linhasDoc[$i]->id, $idLinhasOrg)) {
+                    $idLinhasOrg[$i] += (int)$linhasDoc[$i]->id;
+                } else {
+                    $idLinhasOrg[$i] = (int)$linhasDoc[$i]->id;
+                }
+            }
+
+            foreach ($request->linhaDocumento as $linha) {
+                $idLinhasReq[] = (int)$linha['id'];
+            }
+
+            $diff = array_diff($idLinhasOrg, $idLinhasReq);
+
+            foreach ($diff as $key => $value) {
+                linhasDocumento::where('id', $value)->delete();
+            }
+
             if ($userLogadoRole == "admin") {
                 if ($request->input('tipoDoc') == "Documento de Entrada") {
                     foreach ($request->linhaDocumento as $linha) {
@@ -253,31 +278,9 @@ class DocumentoController extends Controller
                             'idUser' => $request->user()->id,
                         ]);
                     }
+
                     return redirect()->route('documento.index')->with('success', 'Documento alterado com sucesso!');
                 } else if ($request->input('tipoDoc') == "Documento de Saída") {
-                    $linhasDoc = linhasDocumento::where('idDocumento', $documento->id)->get();
-                    $numLinhasOrg = $linhasDoc->count();
-                    $idLinhasOrg = array();
-                    $idLinhasReq = array();
-
-                    for ($i = 0; $i < $numLinhasOrg; $i++) {
-                        if (array_key_exists($linhasDoc[$i]->id, $idLinhasOrg)) {
-                            $idLinhasOrg[$i] += (int)$linhasDoc[$i]->id;
-                        } else {
-                            $idLinhasOrg[$i] = (int)$linhasDoc[$i]->id;
-                        }
-                    }
-
-                    foreach ($request->linhaDocumento as $linha) {
-                        $idLinhasReq[] = (int)$linha['id'];
-                    }
-
-                    $diff = array_diff($idLinhasOrg, $idLinhasReq);
-
-                    foreach ($diff as $key => $value) {
-                        linhasDocumento::where('id', $value)->delete();
-                    }
-
                     $qntPedidaTotal = array();
 
                     foreach ($request->linhaDocumento as $linha) {

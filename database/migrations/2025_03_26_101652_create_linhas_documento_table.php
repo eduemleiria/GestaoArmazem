@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('localizacao')->nullable();
             $table->foreignId('idArtigo')->references('id')->on('artigos');
             $table->foreignId('idDocumento')->references('id')->on('documentos');
-            $table->foreignId('idUser')->references('id')->on('users');
+            $table->foreignId('idUser')->nullable()->references('id')->on('users');
         });
     }
 

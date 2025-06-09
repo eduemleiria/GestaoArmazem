@@ -13,7 +13,7 @@ class ApiLoginController extends Controller
 {
     public function store(Request $request)
     {
-        $validate = $request->validate([
+        $request->validate([
             'username' => 'required',
             'password' => 'required'
         ]);
