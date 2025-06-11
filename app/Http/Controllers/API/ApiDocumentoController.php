@@ -65,7 +65,7 @@ class ApiDocumentoController extends Controller
                 'last_used_at' => Carbon::now(),
             ]);
 
-            Documento::create([
+            $documento = Documento::create([
                 'estado' => "Pendente",
                 'tipoDoc' => $request['tipoDoc'],
                 'data' => $request['data'],
@@ -77,7 +77,59 @@ class ApiDocumentoController extends Controller
                 'idUser' => null
             ]);
 
-            return Documento::orderBy('id', 'desc')->first();
+            return Documento::orderBy('id', 'desc')->where('id', $documento->id)->first();
+        } else {
+            return "O token expirou! Faça login denovo para poder receber um novo token!";
+        }
+    }
+
+    public function update(Request $request, $gestao_documento)
+    {
+        $clienteLogado = PersonalAccessToken::where('token', $request['token'])->first();
+        if (Carbon::now() <= isset($clienteLogado->expire_date)) {
+            $request->validate([
+                'tipoDoc' => ['required', Rule::in(['Documento de Entrada', 'Documento de Saída'])],
+                'data' => 'date_multi_format:"Y-m-d H:i:s","Y-m-d"',
+                'token' => 'required'
+            ]);
+
+            if ($request['tipoDoc'] == "Documento de Saída") {
+                $request->validate([
+                    'moradaD' => 'required',
+                    'matricula' => 'required',
+                ]);
+                $moradaD = $request['moradaD'];
+                $matricula = $request['matricula'];
+            } else {
+                $moradaD = null;
+                $matricula = null;
+            }
+
+            $clienteLogado = PersonalAccessToken::where('token', $request['token'])->first();
+            $cliente = Cliente::where('nome', $clienteLogado->name)->first();
+
+            PersonalAccessToken::where('token', $request['token'])->update([
+                'last_used_at' => Carbon::now(),
+            ]);
+            $documento = Documento::where('id', $gestao_documento)->where('idCliente', $cliente->id)->first();
+            if (isset($documento)) {
+                $documento->update([
+                    'estado' => "Pendente",
+                    'tipoDoc' => $request['tipoDoc'],
+                    'data' => $request['data'],
+                    'moradaC' => $cliente->morada,
+                    'moradaD' => $moradaD,
+                    'matricula' => $matricula,
+                    'dataEmissao' => date('Y-m-d'),
+                    'idUser' => null
+                ]);
+                return [
+                    'mensagem' => "O document com o id $documento->id foi editado com sucesso!",
+                    $documento
+                ];
+            } else {
+                return "O documento com o id $gestao_documento não lhe pertence ou não existe!";
+            }
         } else {
             return "O token expirou! Faça login denovo para poder receber um novo token!";
         }

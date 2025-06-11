@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LinhaDocumentoController;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
@@ -176,6 +177,45 @@ class ApiLinhaDocumentoController extends Controller
             }
         } else {
             return "O token expirou! Faça login denovo para poder receber um novo token!";
+        }
+    }
+
+    public function update(Request $request, $gestao_linha_documento)
+    {
+        $tokenCliente = PersonalAccessToken::where('token', $request['token'])->first();
+
+        if (isset($tokenCliente) && Carbon::now() <= $tokenCliente->expire_date) {
+            $request->validate([
+                'token' => 'required',
+                'idDocumento' => 'required|integer',
+                'nomeArtigo' => 'required',
+                'quantidade' => 'required|integer'
+            ]);
+
+            $tokenCliente->update([
+                'last_used_at' => Carbon::now(),
+            ]);
+            $clienteLogado = Cliente::where('nome', $tokenCliente->name)->first();
+
+            $documento = Documento::where('id', $request['idDocumento'])->where('idCliente', $clienteLogado->id)->first();
+
+            $linha = linhasDocumento::where('id', $gestao_linha_documento)->first();
+            if (isset($documento, $linha)) {
+                $artigo = Artigo::where('nome', $request['nomeArtigo'])->first();
+                $linha->update([
+                    'idArtigo' => $artigo->id,
+                    'quantidade' => $request['quantidade']
+                ]);
+
+                return [
+                    'mensagem' => "A linha com o id $linha->id foi atualizada com sucesso!",
+                    $linha
+                ];
+            }else{
+                return "A linha com o id $gestao_linha_documento não existe ou não lhe pertence!";
+            }
+        } else {
+            return "O token expirou, volte a logar para obter um novo token!";
         }
     }
 
