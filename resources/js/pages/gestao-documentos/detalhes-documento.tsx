@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { Documento, LinhaDocumento, type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { CheckIcon, Clock10Icon, Loader } from 'lucide-react';
+import { CheckIcon, Clock10Icon, Loader, PenBox } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,7 +23,7 @@ export default function DetalhesDoc({ documento, linhasDocumento }: Props) {
             case 'Concluído':
                 return { cor: 'bg-lime-400', icon: <CheckIcon className="w-5 pr-1" /> };
             default:
-                return { cor: 'bg-gray-400', icon: <Loader className="w-5 pr-1" /> };
+                return { cor: 'bg-gray-300', icon: <PenBox className="w-5 pr-1" /> };
         }
     };
 

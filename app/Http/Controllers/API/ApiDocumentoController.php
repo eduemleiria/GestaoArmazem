@@ -66,7 +66,7 @@ class ApiDocumentoController extends Controller
             ]);
 
             $documento = Documento::create([
-                'estado' => "Pendente",
+                'estado' => "Rascunho",
                 'tipoDoc' => $request['tipoDoc'],
                 'data' => $request['data'],
                 'moradaC' => $idCliente->morada,
@@ -114,7 +114,7 @@ class ApiDocumentoController extends Controller
             $documento = Documento::where('id', $gestao_documento)->where('idCliente', $cliente->id)->first();
             if (isset($documento)) {
                 $documento->update([
-                    'estado' => "Pendente",
+                    'estado' => "Rascunho",
                     'tipoDoc' => $request['tipoDoc'],
                     'data' => $request['data'],
                     'moradaC' => $cliente->morada,

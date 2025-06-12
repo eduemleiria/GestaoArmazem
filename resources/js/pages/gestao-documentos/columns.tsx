@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Documento } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { CheckIcon, Clock10Icon, EditIcon, FileDown, MoreHorizontal, SearchIcon } from 'lucide-react';
+import { CheckIcon, Clock10Icon, EditIcon, FileDown, MoreHorizontal, PenBox, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export const columns: ColumnDef<Documento>[] = [
@@ -44,6 +44,13 @@ export const columns: ColumnDef<Documento>[] = [
                 return (
                     <div className="mx-auto flex w-27 items-center justify-center rounded bg-yellow-300 text-right font-bold">
                         <Clock10Icon className="w-5 pr-1" />
+                        {estado}
+                    </div>
+                );
+            } else if (estado == 'Rascunho') {
+                return (
+                    <div className="mx-auto flex w-27 items-center justify-center rounded bg-gray-300 text-right font-bold">
+                        <PenBox className="w-5 pr-1" />
                         {estado}
                     </div>
                 );

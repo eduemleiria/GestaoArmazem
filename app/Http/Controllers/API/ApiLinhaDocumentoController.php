@@ -108,7 +108,6 @@ class ApiLinhaDocumentoController extends Controller
                         'linha' => linhasDocumento::where('idDocumento', $request['idDocumento'])->orderBy('id', 'desc')->first(),
                     ];
                 } else if ($documento->tipoDoc == "Documento de Saída") {
-
                     $quantidadeTotalPaletes = Palete::where('idArtigo', $artigo->id)->sum('quantidade');
 
                     $quantidadeTotalLinhas = linhasDocumento::where('idDocumento', $documento->id)
@@ -136,6 +135,7 @@ class ApiLinhaDocumentoController extends Controller
                             for ($i = 0; $quantidadeFinal < $request['quantidade']; $i++) {
                                 $quantidadeIterada = (int)$quantidades[$i] - (int)$paleteSair[$i]->quantidade;
                                 $quantidades[] = (int)$quantidadeIterada;
+
                                 if ($quantidades[$i + 1] >= 0) {
                                     $linha = LinhasDocumento::create([
                                         'idDocumento' => $documento->id,
@@ -208,10 +208,10 @@ class ApiLinhaDocumentoController extends Controller
                 ]);
 
                 return [
-                    'mensagem' => "A linha com o id $linha->id foi atualizada com sucesso!",
+                    'mensagem' => "A linha com o id $linha->id foi atualizada com sucesso!", 
                     $linha
                 ];
-            }else{
+            } else {
                 return "A linha com o id $gestao_linha_documento não existe ou não lhe pertence!";
             }
         } else {
